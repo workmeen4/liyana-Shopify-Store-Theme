@@ -99,10 +99,10 @@
       "type": "bagkin-header",
       "name": "Bagkin Header Only",
       "settings": {
-        "primary_color": "#F0950A",
-        "header_bg": "#EAE6DF",
+        "primary_color": "#f0950a",
+        "header_bg": "#eae6df",
         "header_text_color": "#000000",
-        "sticky_header_bg": "#ffffff",
+        "sticky_header_bg": "{{ settings.color_palette.foreground }}",
         "sticky_text_color": "#000000",
         "logo_width": 160,
         "mobile_logo_width": 120,
