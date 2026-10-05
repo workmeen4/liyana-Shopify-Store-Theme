@@ -726,6 +726,7 @@
     }
     function closeCart() {
       if(cartDrawer) cartDrawer.classList.remove('is-active');
+      if(overlay) overlay.classList.remove('is-active');
     }
     
     if(cartIcon) cartIcon.addEventListener('click', openCart);
