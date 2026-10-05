@@ -1,0 +1,307 @@
+{% comment %}
+  Bagkin Dual Promotional Banners Section
+  - 2 Column Layout (1 Column on Mobile)
+  - 100% Mobile Friendly & Responsive
+  - Uses Jost font family
+  - Customizable title, button label, button link, background color, text color, and image for each banner
+{% endcomment %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+{% style %}
+  .bagkin-promo-section-{{ section.id }} {
+    width: 100%;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.section_bg_color | default: '#ffffff' }};
+  }
+
+  .bagkin-promo-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+
+  .bagkin-promo-card {
+    position: relative;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 280px;
+    padding: 40px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .bagkin-promo-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+  }
+
+  .bagkin-promo-content {
+    flex: 1;
+    z-index: 2;
+    max-width: 60%;
+  }
+
+  .bagkin-promo-title {
+    font-family: 'Jost', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+  }
+
+  .bagkin-promo-btn {
+    display: inline-block;
+    font-family: 'Jost', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 12px 28px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+  }
+
+  .bagkin-promo-btn:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+  }
+
+  .bagkin-promo-media {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+  }
+
+  .bagkin-promo-img {
+    max-width: 100%;
+    max-height: 240px;
+    object-fit: contain;
+    transition: transform 0.5s ease;
+  }
+
+  .bagkin-promo-card:hover .bagkin-promo-img {
+    transform: scale(1.05);
+  }
+
+  /* Mobile Responsive Settings */
+  @media screen and (max-width: 991px) {
+    .bagkin-promo-container {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    .bagkin-promo-card {
+      min-height: 240px;
+      padding: 30px 24px;
+    }
+
+    .bagkin-promo-title {
+      font-size: 26px;
+      margin-bottom: 18px;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .bagkin-promo-card {
+      padding: 24px 18px;
+      min-height: 200px;
+    }
+
+    .bagkin-promo-title {
+      font-size: 22px;
+    }
+
+    .bagkin-promo-btn {
+      padding: 10px 22px;
+      font-size: 10px;
+    }
+
+    .bagkin-promo-img {
+      max-height: 170px;
+    }
+  }
+{% endstyle %}
+
+<div class="bagkin-promo-section-{{ section.id }}">
+  <div class="bagkin-promo-container">
+    {% for block in section.blocks %}
+      <div class="bagkin-promo-card" style="background-color: {{ block.settings.card_bg_color | default: '#f5f5f5' }};" {{ block.shopify_attributes }}>
+        <div class="bagkin-promo-content">
+          {% if block.settings.title != blank %}
+            <h2 class="bagkin-promo-title" style="color: {{ block.settings.title_color | default: '#000000' }};">
+              {{ block.settings.title | newline_to_br }}
+            </h2>
+          {% endif %}
+
+          {% if block.settings.button_text != blank %}
+            <a
+              href="{{ block.settings.button_link | default: '#' }}"
+              class="bagkin-promo-btn"
+              style="background-color: {{ block.settings.button_bg_color | default: '#000000' }}; color: {{ block.settings.button_text_color | default: '#ffffff' }};"
+            >
+              {{ block.settings.button_text }}
+            </a>
+          {% endif %}
+        </div>
+
+        <div class="bagkin-promo-media">
+          {% if block.settings.image != blank %}
+            <img
+              src="{{ block.settings.image | image_url: width: 600 }}"
+              alt="{{ block.settings.title | escape }}"
+              class="bagkin-promo-img"
+              loading="lazy"
+            >
+          {% else %}
+            {{ 'product-1' | placeholder_svg_tag: 'bagkin-promo-img' }}
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <!-- Default Placeholder Cards when no blocks exist -->
+      <div class="bagkin-promo-card">
+        <div class="bagkin-promo-content">
+          <h2 class="bagkin-promo-title">Amazing leather<br>bag</h2>
+          <a href="#" class="bagkin-promo-btn" style="background-color: #000; color: #fff;">SHOP NOW</a>
+        </div>
+        <div class="bagkin-promo-media">
+          {{ 'product-1' | placeholder_svg_tag: 'bagkin-promo-img' }}
+        </div>
+      </div>
+
+      <div class="bagkin-promo-card">
+        <div class="bagkin-promo-content">
+          <h2 class="bagkin-promo-title">Crossbody Zara<br>bag</h2>
+          <a href="#" class="bagkin-promo-btn" style="background-color: #000; color: #fff;">SHOP NOW</a>
+        </div>
+        <div class="bagkin-promo-media">
+          {{ 'product-2' | placeholder_svg_tag: 'bagkin-promo-img' }}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Bagkin Promo Banners",
+  "max_blocks": 4,
+  "settings": [
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Promo Banner Card",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "title",
+          "label": "Title",
+          "default": "Amazing leather\nbag"
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Title Color",
+          "default": "#000000"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Label",
+          "default": "SHOP NOW"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button Link"
+        },
+        {
+          "type": "color",
+          "id": "button_bg_color",
+          "label": "Button Background",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Button Text Color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Banner Image"
+        },
+        {
+          "type": "color",
+          "id": "card_bg_color",
+          "label": "Card Background Color",
+          "default": "#f5f5f5"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bagkin Promo Banners",
+      "blocks": [
+        {
+          "type": "banner",
+          "settings": {
+            "title": "Amazing leather\nbag",
+            "button_text": "SHOP NOW"
+          }
+        },
+        {
+          "type": "banner",
+          "settings": {
+            "title": "Crossbody Zara\nbag",
+            "button_text": "SHOP NOW"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
