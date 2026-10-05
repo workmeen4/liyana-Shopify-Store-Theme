@@ -388,6 +388,16 @@
       "settings": {
         "heading": "TESTIMONIALS",
         "overlay_opacity": 60,
+        "accent_color": "#f0950a"
+      }
+    },
+    "bagkin_blog_slider_m4fJaX": {
+      "type": "bagkin-blog-slider",
+      "name": "Bagkin Blog Slider",
+      "settings": {
+        "heading": "Latest News",
+        "blog": "",
+        "post_limit": 6,
         "accent_color": "#F0950A"
       }
     }
@@ -397,6 +407,7 @@
     "bagkin_header_banner_p8XwqE",
     "bagkin_promo_banners_Fc3PaB",
     "bagkin_bestseller_grid_ETy9RE",
-    "bagkin_testimonials_QWV9Ew"
+    "bagkin_testimonials_QWV9Ew",
+    "bagkin_blog_slider_m4fJaX"
   ]
 }
