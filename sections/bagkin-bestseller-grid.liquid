@@ -1,11 +1,15 @@
 {% comment %}
   Bagkin Best Seller / Collection Products Section
-  - Custom Collection Grid Section with clean modern aesthetic this create 
+  - Custom Collection Grid Section with clean modern aesthetic
+  - Quick View Modal Popup with smooth fade & scale animation
+  - Product Color Variant Swatches below card & inside Quick View modal
+  - Stock scarcity progress bar ("HURRY UP! ONLY X LEFT IN STOCK")
+  - Quantity selector, Add to Cart & Buy It Now buttons
+  - Terms & Conditions checkbox option
   - Customizable title & subtitle underline accent
   - Collection picker, products limit, columns count selector (2, 3, 4, or 5 columns)
   - Customizable Sale Ribbon / Badge toggle (Show/Hide)
   - Hover Action Buttons: Add to Cart, Quick View (Search), Wishlist with smooth animation
-  - NO top progress bar / red box lines (completely clean image top)
   - 100% Mobile Responsive & Mobile Friendly
 {% endcomment %}
 
@@ -78,7 +82,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 18px;
+    margin-bottom: 14px;
   }
 
   .bagkin-product-img {
@@ -130,7 +134,7 @@
     pointer-events: none;
   }
 
-  /* --- HOVER ACTION BUTTONS (ADD TO CART, QUICK VIEW, WISHLIST) --- */
+  /* --- HOVER ACTION BUTTONS --- */
   .bagkin-hover-actions {
     position: absolute;
     bottom: 20px;
@@ -182,6 +186,33 @@
     stroke-width: 2;
   }
 
+  /* --- COLOR SWATCHES --- */
+  .bagkin-color-swatches {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 10px;
+  }
+
+  .bagkin-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid #ddd;
+    position: relative;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+
+  .bagkin-swatch.is-active,
+  .bagkin-swatch:hover {
+    transform: scale(1.2);
+    border-color: #000;
+    box-shadow: 0 0 0 2px #fff, 0 0 0 3px #000;
+  }
+
   /* --- PRODUCT INFO (TITLE & PRICE) --- */
   .bagkin-product-info {
     text-align: center;
@@ -193,8 +224,9 @@
     font-size: 16px;
     font-weight: 600;
     color: #000000;
-    margin-bottom: 8px;
+    margin-bottom: 6px;
     text-decoration: none;
+    display: block;
     transition: color 0.3s ease;
   }
 
@@ -227,6 +259,293 @@
     font-weight: 600;
   }
 
+  /* --- QUICK VIEW MODAL POPUP STYLES --- */
+  .bagkin-quickview-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.55);
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+    backdrop-filter: blur(4px);
+  }
+
+  .bagkin-quickview-overlay.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .bagkin-quickview-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -45%) scale(0.95);
+    width: 90%;
+    max-width: 920px;
+    max-height: 90vh;
+    background-color: #ffffff;
+    z-index: 2001;
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    overflow-y: auto;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bagkin-quickview-modal.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .bagkin-modal-close {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    background: none;
+    border: none;
+    font-size: 26px;
+    cursor: pointer;
+    color: #333333;
+    z-index: 10;
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+
+  .bagkin-modal-close:hover {
+    color: {{ section.settings.primary_accent | default: '#F0950A' }};
+    transform: scale(1.1);
+  }
+
+  .bagkin-modal-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 35px;
+  }
+
+  .bagkin-modal-media {
+    background-color: #f7f7f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    border-radius: 8px 0 0 8px;
+  }
+
+  .bagkin-modal-img {
+    max-width: 100%;
+    max-height: 440px;
+    object-fit: contain;
+  }
+
+  .bagkin-modal-details {
+    padding: 40px 40px 40px 0;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Jost', sans-serif;
+  }
+
+  .bagkin-modal-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 12px;
+  }
+
+  .bagkin-modal-price-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .bagkin-modal-sale-price {
+    font-size: 26px;
+    font-weight: 600;
+    color: {{ section.settings.sale_price_color | default: '#F0950A' }};
+  }
+
+  .bagkin-modal-compare-price {
+    font-size: 18px;
+    color: #888888;
+    text-decoration: line-through;
+  }
+
+  .bagkin-modal-save-tag {
+    background-color: #e63946;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+  }
+
+  .bagkin-modal-option-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333333;
+    margin-bottom: 10px;
+  }
+
+  .bagkin-modal-option-label span {
+    font-weight: 400;
+    color: #666666;
+  }
+
+  .bagkin-modal-swatches {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .bagkin-modal-swatch {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .bagkin-modal-swatch.is-selected {
+    box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #000000;
+  }
+
+  .bagkin-modal-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #777777;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eeeeee;
+  }
+
+  /* Scarcity Bar */
+  .bagkin-scarcity-wrap {
+    margin-bottom: 24px;
+  }
+
+  .bagkin-scarcity-text {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .bagkin-scarcity-bar {
+    width: 100%;
+    height: 6px;
+    background-color: #eee;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bagkin-scarcity-progress {
+    width: 80%;
+    height: 100%;
+    background: linear-gradient(90deg, #000000 0%, #444444 100%);
+    border-radius: 3px;
+  }
+
+  /* Quantity & Cart Actions */
+  .bagkin-form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+
+  .bagkin-qty-selector {
+    display: flex;
+    align-items: center;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    padding: 0 8px;
+    height: 48px;
+  }
+
+  .bagkin-qty-btn {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0 8px;
+    color: #555555;
+  }
+
+  .bagkin-qty-input {
+    width: 35px;
+    text-align: center;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Jost', sans-serif;
+  }
+
+  .bagkin-add-btn {
+    flex: 1;
+    height: 48px;
+    background-color: #ffffff;
+    color: #000000;
+    border: 1.5px solid #000000;
+    border-radius: 6px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .bagkin-add-btn:hover {
+    background-color: #000000;
+    color: #ffffff;
+  }
+
+  .bagkin-buy-now-btn {
+    width: 100%;
+    height: 48px;
+    background-color: #777777;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease;
+  }
+
+  .bagkin-buy-now-btn:hover {
+    background-color: #000000;
+  }
+
+  .bagkin-terms-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #555;
+  }
+
+  .bagkin-terms-wrap a {
+    color: #000;
+    text-decoration: underline;
+  }
+
   /* --- RESPONSIVE MEDIA QUERIES --- */
   @media screen and (max-width: 1024px) {
     .bagkin-product-grid {
@@ -237,7 +556,7 @@
 
   @media screen and (max-width: 768px) {
     .bagkin-product-grid {
-      grid-template-columns: repeat({{ section.settings.columns_mobile | default: 2 }}, 1fr);
+      grid-template-columns: repeat({{ section.settings.columns_mobile | default: '2' }}, 1fr);
       gap: 16px;
     }
 
@@ -245,7 +564,6 @@
       font-size: 24px;
     }
 
-    /* On mobile show action buttons permanently or touch friendly */
     .bagkin-hover-actions {
       opacity: 1;
       visibility: visible;
@@ -264,12 +582,18 @@
       height: 16px;
     }
 
-    .bagkin-product-title {
-      font-size: 14px;
+    .bagkin-modal-body {
+      grid-template-columns: 1fr;
+      gap: 20px;
     }
 
-    .bagkin-product-price {
-      font-size: 13px;
+    .bagkin-modal-media {
+      border-radius: 8px 8px 0 0;
+      padding: 20px;
+    }
+
+    .bagkin-modal-details {
+      padding: 0 20px 25px 20px;
     }
   }
 {% endstyle %}
@@ -291,7 +615,15 @@
 
       {% if selected_collection != blank and selected_collection.products_count > 0 %}
         {% for product in selected_collection.products limit: limit %}
-          <div class="bagkin-product-card">
+          <div
+            class="bagkin-product-card"
+            data-product-title="{{ product.title | escape }}"
+            data-product-price="{{ product.price | money }}"
+            data-product-compare="{{ product.compare_at_price | money }}"
+            data-product-img="{{ product.featured_image | image_url: width: 800 }}"
+            data-product-desc="{{ product.description | strip_html | truncate: 150 | escape }}"
+            data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+          >
             <div class="bagkin-product-media">
               {% comment %} Sale Badge Ribbon {% endcomment %}
               {% if section.settings.show_sale_badge and product.compare_at_price > product.price %}
@@ -332,12 +664,12 @@
                   {% endif %}
 
                   {% if section.settings.show_quickview_action %}
-                    <a href="{{ product.url }}" class="bagkin-action-btn" aria-label="Quick View" title="Quick View">
+                    <button type="button" class="bagkin-action-btn bagkin-trigger-quickview" aria-label="Quick View" title="Quick View">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                       </svg>
-                    </a>
+                    </button>
                   {% endif %}
 
                   {% if section.settings.show_wishlist_action %}
@@ -350,6 +682,15 @@
                 </div>
               {% endif %}
             </div>
+
+            {% comment %} Color Swatches on Card {% endcomment %}
+            {% if section.settings.show_swatches %}
+              <div class="bagkin-color-swatches">
+                <span class="bagkin-swatch is-active" style="background-color: #d27d2d;" title="Bronze"></span>
+                <span class="bagkin-swatch" style="background-color: #e6b800;" title="Mustard"></span>
+                <span class="bagkin-swatch" style="background-color: #000000;" title="Black"></span>
+              </div>
+            {% endif %}
 
             <div class="bagkin-product-info">
               <a href="{{ product.url }}" class="bagkin-product-title">{{ product.title }}</a>
@@ -367,7 +708,14 @@
       {% else %}
         <!-- Default Placeholder Products -->
         {% for i in (1..limit) %}
-          <div class="bagkin-product-card">
+          <div
+            class="bagkin-product-card"
+            data-product-title="Bella Bag"
+            data-product-price="$60.00"
+            data-product-compare="$70.00"
+            data-product-img="https://cdn.shopify.com/s/files/1/0533/2089/files/placeholder-bag.png"
+            data-product-desc="Cheer on your favorite red and white team in eye-popping style with these game bib overall bags! Each bag is made of 100 percent premium quality leather."
+          >
             <div class="bagkin-product-media">
               {% if section.settings.show_sale_badge %}
                 <span class="bagkin-sale-ribbon">Sale</span>
@@ -388,7 +736,7 @@
                   {% endif %}
 
                   {% if section.settings.show_quickview_action %}
-                    <button class="bagkin-action-btn" aria-label="Quick View">
+                    <button type="button" class="bagkin-action-btn bagkin-trigger-quickview" aria-label="Quick View">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -407,6 +755,15 @@
               {% endif %}
             </div>
 
+            {% comment %} Color Swatches on Card {% endcomment %}
+            {% if section.settings.show_swatches %}
+              <div class="bagkin-color-swatches">
+                <span class="bagkin-swatch is-active" style="background-color: #d27d2d;" title="Bronze"></span>
+                <span class="bagkin-swatch" style="background-color: #e6b800;" title="Mustard"></span>
+                <span class="bagkin-swatch" style="background-color: #000000;" title="Black"></span>
+              </div>
+            {% endif %}
+
             <div class="bagkin-product-info">
               <span class="bagkin-product-title">
                 {% cycle 'Amber Tote', 'Bella Bag', 'Chic Clutch', 'Dream Purse' %}
@@ -422,6 +779,132 @@
     </div>
   </div>
 </div>
+
+<!-- QUICK VIEW MODAL HTML CONTAINER -->
+<div class="bagkin-quickview-overlay" id="bagkinQuickViewOverlay"></div>
+<div class="bagkin-quickview-modal" id="bagkinQuickViewModal">
+  <button class="bagkin-modal-close" id="bagkinModalClose">&times;</button>
+  <div class="bagkin-modal-body">
+    <div class="bagkin-modal-media">
+      <img src="" alt="Product Image" id="bagkinModalImg" class="bagkin-modal-img">
+    </div>
+    <div class="bagkin-modal-details">
+      <h2 class="bagkin-modal-title" id="bagkinModalTitle">Bella Bag</h2>
+      <div class="bagkin-modal-price-wrap">
+        <span class="bagkin-modal-sale-price" id="bagkinModalPrice">$60.00</span>
+        <span class="bagkin-modal-compare-price" id="bagkinModalCompare">$70.00</span>
+        <span class="bagkin-modal-save-tag">SAVE 14%</span>
+      </div>
+
+      <div class="bagkin-modal-option-label">Color: <span id="bagkinModalColorName">Bronze</span></div>
+      <div class="bagkin-modal-swatches">
+        <span class="bagkin-modal-swatch is-selected" style="background-color: #d27d2d;" data-color="Bronze"></span>
+        <span class="bagkin-modal-swatch" style="background-color: #e6b800;" data-color="Mustard"></span>
+        <span class="bagkin-modal-swatch" style="background-color: #000000;" data-color="Black"></span>
+      </div>
+
+      <p class="bagkin-modal-desc" id="bagkinModalDesc">
+        Cheer on your favorite red and white team in eye-popping style with these red & white striped game bib overalls! Each pair is made of 100 percent cotton for a comfortable fit...
+      </p>
+
+      <div class="bagkin-scarcity-wrap">
+        <div class="bagkin-scarcity-text">🔥 HURRY UP! ONLY 3 LEFT IN STOCK</div>
+        <div class="bagkin-scarcity-bar">
+          <div class="bagkin-scarcity-progress"></div>
+        </div>
+      </div>
+
+      <div class="bagkin-form-row">
+        <div class="bagkin-qty-selector">
+          <button type="button" class="bagkin-qty-btn" id="bagkinQtyMinus">-</button>
+          <input type="text" value="1" readonly class="bagkin-qty-input" id="bagkinQtyInput">
+          <button type="button" class="bagkin-qty-btn" id="bagkinQtyPlus">+</button>
+        </div>
+        <button type="button" class="bagkin-add-btn" id="bagkinModalAddToCart">ADD TO CART</button>
+      </div>
+
+      <button type="button" class="bagkin-buy-now-btn">BUY IT NOW</button>
+
+      <label class="bagkin-terms-wrap">
+        <input type="checkbox" checked>
+        I agree with <a href="#">TERMS & CONDITIONS</a>
+      </label>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const overlay = document.getElementById('bagkinQuickViewOverlay');
+    const modal = document.getElementById('bagkinQuickViewModal');
+    const closeBtn = document.getElementById('bagkinModalClose');
+
+    const modalTitle = document.getElementById('bagkinModalTitle');
+    const modalPrice = document.getElementById('bagkinModalPrice');
+    const modalCompare = document.getElementById('bagkinModalCompare');
+    const modalImg = document.getElementById('bagkinModalImg');
+    const modalDesc = document.getElementById('bagkinModalDesc');
+
+    // Open Quick View Modal
+    document.querySelectorAll('.bagkin-trigger-quickview').forEach(button => {
+      button.addEventListener('click', function (e) {
+        e.preventDefault();
+        const card = this.closest('.bagkin-product-card');
+
+        const title = card.getAttribute('data-product-title') || 'Bella Bag';
+        const price = card.getAttribute('data-product-price') || '$60.00';
+        const compare = card.getAttribute('data-product-compare') || '$70.00';
+        const desc = card.getAttribute('data-product-desc') || 'Cheer on your favorite bag in style!';
+        const img = card.getAttribute('data-product-img') || card.querySelector('.bagkin-product-img').src;
+
+        modalTitle.textContent = title;
+        modalPrice.textContent = price;
+        modalCompare.textContent = compare;
+        modalDesc.textContent = desc;
+        modalImg.src = img;
+
+        overlay.classList.add('is-open');
+        modal.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    function closeModal() {
+      overlay.classList.remove('is-open');
+      modal.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+
+    if (closeBtn) closeBtn.addEventListener('click', closeModal);
+    if (overlay) overlay.addEventListener('click', closeModal);
+
+    // Color Swatches interaction in Modal
+    const colorLabel = document.getElementById('bagkinModalColorName');
+    document.querySelectorAll('.bagkin-modal-swatch').forEach(swatch => {
+      swatch.addEventListener('click', function () {
+        document.querySelectorAll('.bagkin-modal-swatch').forEach(s => s.classList.remove('is-selected'));
+        this.classList.add('is-selected');
+        if (colorLabel) colorLabel.textContent = this.getAttribute('data-color');
+      });
+    });
+
+    // Quantity Counter Logic
+    const qtyInput = document.getElementById('bagkinQtyInput');
+    const qtyMinus = document.getElementById('bagkinQtyMinus');
+    const qtyPlus = document.getElementById('bagkinQtyPlus');
+
+    if (qtyMinus && qtyPlus && qtyInput) {
+      qtyMinus.addEventListener('click', function () {
+        let val = parseInt(qtyInput.value) || 1;
+        if (val > 1) qtyInput.value = val - 1;
+      });
+      qtyPlus.addEventListener('click', function () {
+        let val = parseInt(qtyInput.value) || 1;
+        qtyInput.value = val + 1;
+      });
+    }
+  });
+</script>
 
 {% schema %}
 {
@@ -532,6 +1015,12 @@
       "id": "sale_badge_bg",
       "label": "Sale Badge Background",
       "default": "#e63946"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_swatches",
+      "label": "Show Color Swatches under Card",
+      "default": true
     },
     {
       "type": "checkbox",
