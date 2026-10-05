@@ -40,8 +40,7 @@
   /* --- HEADER STYLES --- */
   .bagkin-header-container {
     width: 100%;
-    position: sticky;
-    top: 0;
+    position: relative;
     z-index: 999;
   }
 
@@ -52,17 +51,23 @@
     padding: 24px 5%;
     width: 100%;
     background-color: transparent;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: background-color 0.4s ease, padding 0.4s ease, box-shadow 0.4s ease;
   }
 
-  /* Sticky Header State */
+  /* Fixed Sticky Header on Page Scroll */
   .bagkin-header.is-sticky {
-    background-color: {{ section.settings.sticky_header_bg | default: '#ffffff' }};
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    z-index: 9999 !important;
+    background-color: {{ section.settings.sticky_header_bg | default: '#ffffff' }} !important;
     color: {{ section.settings.sticky_header_text_color | default: '#000000' }};
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     padding: 14px 5%;
     backdrop-filter: blur(8px);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    animation: bagkinSlideDown 0.4s ease forwards;
   }
 
   .bagkin-header.is-sticky .bagkin-nav-item a,
