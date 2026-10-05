@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-{% style %}
+<style>
   :root {
     --bagkin-font: 'Jost', sans-serif;
     --bagkin-primary: {{ section.settings.primary_color | default: '#F0950A' }};
@@ -22,6 +22,9 @@
     --bagkin-sticky-bg: {{ section.settings.sticky_header_bg | default: '#ffffff' }};
     --bagkin-sticky-text: {{ section.settings.sticky_text_color | default: '#000000' }};
   }
+</style>
+
+{% style %}
 
   .bagkin-header-standalone * {
     font-family: var(--bagkin-font);
@@ -450,15 +453,40 @@
     }
 
     function handleScroll() {
-      if (window.scrollY > 30) {
+      var scrollTop = window.scrollY
+        || window.pageYOffset
+        || document.documentElement.scrollTop
+        || document.body.scrollTop
+        || 0;
+      if (scrollTop > 30) {
         header.classList.add('is-sticky');
       } else {
         header.classList.remove('is-sticky');
       }
     }
 
+    // Listen on all possible scroll targets
     window.addEventListener('scroll', handleScroll, { passive: true });
+    document.addEventListener('scroll', handleScroll, { passive: true });
+    document.documentElement.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', updateSpacerHeight, { passive: true });
+
+    // rAF fallback — keeps checking even if scroll events are swallowed
+    var lastScrollTop = -1;
+    function rafLoop() {
+      var scrollTop = window.scrollY
+        || window.pageYOffset
+        || document.documentElement.scrollTop
+        || document.body.scrollTop
+        || 0;
+      if (scrollTop !== lastScrollTop) {
+        lastScrollTop = scrollTop;
+        handleScroll();
+      }
+      requestAnimationFrame(rafLoop);
+    }
+    requestAnimationFrame(rafLoop);
+
     handleScroll();
     updateSpacerHeight();
 
