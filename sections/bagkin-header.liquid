@@ -13,18 +13,21 @@
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
+  /* ============================================================
+     BAGKIN HEADER — All CSS in a raw style tag
+     Reason: Shopify scopes selectors with #shopify-section-ID
+     which breaks position:fixed elements on desktop.
+  ============================================================ */
   :root {
     --bagkin-font: 'Jost', sans-serif;
     --bagkin-primary: {{ section.settings.primary_color | default: '#F0950A' }};
-    --bagkin-secondary: {{ section.settings.secondary_color | default: '#000000' }};
     --bagkin-header-bg: {{ section.settings.header_bg | default: '#EAE6DF' }};
     --bagkin-header-text: {{ section.settings.header_text_color | default: '#000000' }};
     --bagkin-sticky-bg: {{ section.settings.sticky_header_bg | default: '#ffffff' }};
     --bagkin-sticky-text: {{ section.settings.sticky_text_color | default: '#000000' }};
+    --bagkin-logo-width: {{ section.settings.logo_width | default: 160 }}px;
+    --bagkin-mobile-logo-width: {{ section.settings.mobile_logo_width | default: 120 }}px;
   }
-</style>
-
-{% style %}
 
   .bagkin-header-standalone * {
     font-family: var(--bagkin-font);
@@ -33,6 +36,7 @@
     padding: 0;
   }
 
+  /* --- BASE HEADER --- */
   .bagkin-header-standalone {
     width: 100%;
     position: fixed;
@@ -53,26 +57,15 @@
     transition: padding 0.3s ease;
   }
 
-  /* Sticky Scrolled State */
+  /* --- STICKY STATE --- */
   .bagkin-header-standalone.is-sticky {
     background-color: var(--bagkin-sticky-bg) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.10) !important;
+    border-bottom: 1px solid rgba(0,0,0,0.06) !important;
   }
 
   .bagkin-header-standalone.is-sticky .bagkin-header-inner {
-    padding: 14px 5%;
-  }
-
-  /* Spacer so content does not hide under the fixed header */
-  .bagkin-header-spacer {
-    height: 80px;
-  }
-
-  @media screen and (max-width: 768px) {
-    .bagkin-header-spacer {
-      height: 66px;
-    }
+    padding: 14px 5% !important;
   }
 
   .bagkin-header-standalone.is-sticky .bagkin-nav-item a,
@@ -84,18 +77,19 @@
 
   .bagkin-header-standalone.is-sticky .bagkin-icon-btn svg {
     stroke: var(--bagkin-sticky-text) !important;
-    color: var(--bagkin-sticky-text) !important;
   }
 
-  /* Logo Styling */
-  .bagkin-logo a {
-    text-decoration: none;
-    display: flex;
-    align-items: center;
+  /* --- SPACER --- */
+  .bagkin-header-spacer { height: 80px; }
+  @media screen and (max-width: 768px) {
+    .bagkin-header-spacer { height: 66px; }
   }
+
+  /* --- LOGO --- */
+  .bagkin-logo a { text-decoration: none; display: flex; align-items: center; }
 
   .bagkin-logo-img {
-    width: {{ section.settings.logo_width | default: 160 }}px;
+    width: var(--bagkin-logo-width);
     height: {% if section.settings.logo_height != blank %}{{ section.settings.logo_height }}px{% else %}auto{% endif %};
     max-width: 100%;
     object-fit: contain;
@@ -109,19 +103,9 @@
     text-transform: uppercase;
   }
 
-  /* Navigation Menu */
-  .bagkin-nav {
-    display: flex;
-    align-items: center;
-    gap: 36px;
-  }
-
-  .bagkin-nav-list {
-    display: flex;
-    list-style: none;
-    gap: 32px;
-    align-items: center;
-  }
+  /* --- NAV --- */
+  .bagkin-nav { display: flex; align-items: center; gap: 36px; }
+  .bagkin-nav-list { display: flex; list-style: none; gap: 32px; align-items: center; }
 
   .bagkin-nav-item a {
     font-size: 13px;
@@ -138,195 +122,109 @@
   .bagkin-nav-item a::after {
     content: '';
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 0;
-    height: 2px;
+    bottom: 0; left: 0;
+    width: 0; height: 2px;
     background-color: var(--bagkin-primary);
     transition: width 0.3s ease;
   }
 
-  .bagkin-nav-item a:hover {
-    color: var(--bagkin-primary);
-  }
+  .bagkin-nav-item a:hover { color: var(--bagkin-primary); }
+  .bagkin-nav-item a:hover::after { width: 100%; }
 
-  .bagkin-nav-item a:hover::after {
-    width: 100%;
-  }
-
-  /* Action Icons */
-  .bagkin-actions {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
+  /* --- ICONS --- */
+  .bagkin-actions { display: flex; align-items: center; gap: 20px; }
 
   .bagkin-icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
+    background: none; border: none; cursor: pointer;
     color: var(--bagkin-header-text);
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     padding: 6px;
     transition: transform 0.2s ease, color 0.3s ease;
     text-decoration: none;
   }
 
-  .bagkin-icon-btn:hover {
-    color: var(--bagkin-primary);
-    transform: translateY(-2px);
-  }
+  .bagkin-icon-btn:hover { color: var(--bagkin-primary); transform: translateY(-2px); }
 
   .bagkin-icon-btn svg {
-    width: 22px;
-    height: 22px;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 1.8;
+    width: 22px; height: 22px;
+    stroke: currentColor; fill: none; stroke-width: 1.8;
   }
 
   .bagkin-cart-badge {
-    position: absolute;
-    top: -2px;
-    right: -4px;
+    position: absolute; top: -2px; right: -4px;
     background-color: var(--bagkin-primary);
-    color: #ffffff;
-    font-size: 11px;
-    font-weight: 600;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    color: #fff; font-size: 11px; font-weight: 600;
+    width: 18px; height: 18px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
   }
 
+  /* --- HAMBURGER --- */
   .bagkin-hamburger {
-    display: none;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 6px;
+    display: none; background: none; border: none;
+    cursor: pointer; padding: 6px;
     color: var(--bagkin-header-text);
   }
+  .bagkin-hamburger svg { width: 26px; height: 26px; stroke: currentColor; }
 
-  .bagkin-hamburger svg {
-    width: 26px;
-    height: 26px;
-  }
-
-  /* Mobile Drawer Menu */
+  /* --- MOBILE DRAWER --- */
   .bagkin-mobile-menu {
-    position: fixed;
-    top: 0;
-    left: -100%;
-    width: 80%;
-    max-width: 320px;
-    height: 100vh;
-    background-color: #ffffff;
+    position: fixed; top: 0; left: -100%;
+    width: 80%; max-width: 320px; height: 100vh;
+    background-color: #fff;
     z-index: 99999;
-    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
+    box-shadow: 4px 0 25px rgba(0,0,0,0.15);
     transition: left 0.4s ease;
     padding: 30px 24px;
-    display: flex;
-    flex-direction: column;
-    overflow-y: auto;
+    display: flex; flex-direction: column; overflow-y: auto;
   }
-
-  .bagkin-mobile-menu.is-active {
-    left: 0;
-  }
+  .bagkin-mobile-menu.is-active { left: 0; }
 
   .bagkin-mobile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
-    padding-bottom: 15px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 30px; padding-bottom: 15px;
     border-bottom: 1px solid #eee;
   }
 
   .bagkin-close-btn {
-    background: none;
-    border: none;
-    font-size: 28px;
-    line-height: 1;
-    cursor: pointer;
-    color: #000;
-    padding: 4px 8px;
-    border-radius: 4px;
+    background: none; border: none;
+    font-size: 28px; line-height: 1; cursor: pointer;
+    color: #000; padding: 4px 8px; border-radius: 4px;
     transition: background 0.2s ease;
-    z-index: 100000;
-    position: relative;
+    position: relative; z-index: 100000;
   }
+  .bagkin-close-btn:hover { background: rgba(0,0,0,0.08); }
 
-  .bagkin-close-btn:hover {
-    background: rgba(0,0,0,0.08);
-  }
-
-  .bagkin-mobile-nav {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
+  .bagkin-mobile-nav { display: flex; flex-direction: column; gap: 20px; }
   .bagkin-mobile-nav a {
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    color: #000;
-    text-decoration: none;
+    font-size: 16px; font-weight: 600; letter-spacing: 1px;
+    text-transform: uppercase; color: #000; text-decoration: none;
   }
 
   .bagkin-mobile-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 99998;
-    opacity: 0;
-    visibility: hidden;
+    position: fixed; top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 99998; opacity: 0; visibility: hidden;
     transition: opacity 0.3s ease, visibility 0.3s ease;
   }
+  .bagkin-mobile-overlay.is-active { opacity: 1; visibility: visible; }
 
-  .bagkin-mobile-overlay.is-active {
-    opacity: 1;
-    visibility: visible;
-  }
-
+  /* --- RESPONSIVE --- */
   @media screen and (max-width: 991px) {
-    .bagkin-nav {
-      display: none;
-    }
-    .bagkin-hamburger {
-      display: block;
-    }
+    .bagkin-nav { display: none; }
+    .bagkin-hamburger { display: block; }
+    .bagkin-logo-img { width: var(--bagkin-mobile-logo-width); }
     {% if section.settings.mobile_show_search_cart_only %}
-      .bagkin-icon-account,
-      .bagkin-icon-wishlist {
-        display: none !important;
-      }
+      .bagkin-icon-account, .bagkin-icon-wishlist { display: none !important; }
     {% endif %}
-    .bagkin-logo-img {
-      width: {{ section.settings.mobile_logo_width | default: 120 }}px;
-    }
   }
 
   @media screen and (max-width: 480px) {
-    .bagkin-header-inner {
-      padding: 16px 4%;
-    }
-    .bagkin-logo-text {
-      font-size: 24px;
-    }
+    .bagkin-header-inner { padding: 16px 4%; }
+    .bagkin-logo-text { font-size: 24px; }
   }
-{% endstyle %}
+</style>
 
 <header class="bagkin-header-standalone" id="bagkinHeaderStandalone">
   <div class="bagkin-header-inner">
@@ -350,9 +248,7 @@
         {% assign main_menu = linklists[section.settings.menu_linklist] %}
         {% if main_menu.links.size > 0 %}
           {% for link in main_menu.links %}
-            <li class="bagkin-nav-item">
-              <a href="{{ link.url }}">{{ link.title }}</a>
-            </li>
+            <li class="bagkin-nav-item"><a href="{{ link.url }}">{{ link.title }}</a></li>
           {% endfor %}
         {% else %}
           <li class="bagkin-nav-item"><a href="#">HOME</a></li>
@@ -413,14 +309,14 @@
   </div>
 </header>
 
-<!-- Spacer to push content below fixed header -->
+<!-- Spacer so page content is not hidden under fixed header -->
 <div class="bagkin-header-spacer" aria-hidden="true"></div>
 
-<!-- MOBILE DRAWER MENU -->
+<!-- MOBILE DRAWER -->
 <div class="bagkin-mobile-overlay" id="bagkinStandaloneOverlay"></div>
 <div class="bagkin-mobile-menu" id="bagkinStandaloneMobileMenu">
   <div class="bagkin-mobile-header">
-    <span class="bagkin-logo-text" style="color: #000;">{{ section.settings.logo_text | default: shop.name }}</span>
+    <span class="bagkin-logo-text" style="color:#000;">{{ section.settings.logo_text | default: shop.name }}</span>
     <button class="bagkin-close-btn" id="bagkinStandaloneCloseBtn">&times;</button>
   </div>
   <nav class="bagkin-mobile-nav">
@@ -441,81 +337,57 @@
 
 <script>
   (function () {
-    const header = document.getElementById('bagkinHeaderStandalone');
+    var header = document.getElementById('bagkinHeaderStandalone');
     if (!header) return;
 
-    // Dynamically size spacers to match actual header height
+    function getScroll() {
+      return window.scrollY !== undefined ? window.scrollY
+           : window.pageYOffset !== undefined ? window.pageYOffset
+           : document.documentElement.scrollTop || document.body.scrollTop || 0;
+    }
+
     function updateSpacerHeight() {
-      const h = header.offsetHeight;
+      var h = header.offsetHeight;
       document.querySelectorAll('.bagkin-header-spacer').forEach(function(el) {
         el.style.height = h + 'px';
       });
     }
 
     function handleScroll() {
-      var scrollTop = window.scrollY
-        || window.pageYOffset
-        || document.documentElement.scrollTop
-        || document.body.scrollTop
-        || 0;
-      if (scrollTop > 30) {
+      if (getScroll() > 30) {
         header.classList.add('is-sticky');
       } else {
         header.classList.remove('is-sticky');
       }
     }
 
-    // Listen on all possible scroll targets
     window.addEventListener('scroll', handleScroll, { passive: true });
     document.addEventListener('scroll', handleScroll, { passive: true });
-    document.documentElement.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', updateSpacerHeight, { passive: true });
 
-    // rAF fallback — keeps checking even if scroll events are swallowed
-    var lastScrollTop = -1;
-    function rafLoop() {
-      var scrollTop = window.scrollY
-        || window.pageYOffset
-        || document.documentElement.scrollTop
-        || document.body.scrollTop
-        || 0;
-      if (scrollTop !== lastScrollTop) {
-        lastScrollTop = scrollTop;
-        handleScroll();
-      }
-      requestAnimationFrame(rafLoop);
-    }
-    requestAnimationFrame(rafLoop);
+    /* rAF polling — bulletproof fallback */
+    var _last = -1;
+    (function poll() {
+      var s = getScroll();
+      if (s !== _last) { _last = s; handleScroll(); }
+      requestAnimationFrame(poll);
+    })();
 
     handleScroll();
     updateSpacerHeight();
 
-    // Mobile menu
-    const hamburger = document.getElementById('bagkinStandaloneHamburger');
-    const closeBtn = document.getElementById('bagkinStandaloneCloseBtn');
-    const mobileMenu = document.getElementById('bagkinStandaloneMobileMenu');
-    const overlay = document.getElementById('bagkinStandaloneOverlay');
+    /* Mobile menu */
+    var hamburger  = document.getElementById('bagkinStandaloneHamburger');
+    var closeBtn   = document.getElementById('bagkinStandaloneCloseBtn');
+    var mobileMenu = document.getElementById('bagkinStandaloneMobileMenu');
+    var overlay    = document.getElementById('bagkinStandaloneOverlay');
 
-    if (hamburger && mobileMenu && overlay) {
-      hamburger.addEventListener('click', function () {
-        mobileMenu.classList.add('is-active');
-        overlay.classList.add('is-active');
-      });
-    }
+    function openMenu()  { if(mobileMenu) mobileMenu.classList.add('is-active');    if(overlay) overlay.classList.add('is-active'); }
+    function closeMenu() { if(mobileMenu) mobileMenu.classList.remove('is-active'); if(overlay) overlay.classList.remove('is-active'); }
 
-    if (closeBtn && mobileMenu && overlay) {
-      closeBtn.addEventListener('click', function () {
-        mobileMenu.classList.remove('is-active');
-        overlay.classList.remove('is-active');
-      });
-    }
-
-    if (overlay && mobileMenu) {
-      overlay.addEventListener('click', function () {
-        mobileMenu.classList.remove('is-active');
-        overlay.classList.remove('is-active');
-      });
-    }
+    if (hamburger) hamburger.addEventListener('click', openMenu);
+    if (closeBtn)  closeBtn.addEventListener('click', closeMenu);
+    if (overlay)   overlay.addEventListener('click', closeMenu);
   })();
 </script>
 
@@ -523,125 +395,26 @@
 {
   "name": "Bagkin Header Only",
   "settings": [
-    {
-      "type": "header",
-      "content": "Theme Colors & Branding"
-    },
-    {
-      "type": "color",
-      "id": "primary_color",
-      "label": "Primary Accent Color",
-      "default": "#F0950A"
-    },
-    {
-      "type": "color",
-      "id": "header_bg",
-      "label": "Header Initial Background",
-      "default": "#EAE6DF"
-    },
-    {
-      "type": "color",
-      "id": "header_text_color",
-      "label": "Header Initial Text Color",
-      "default": "#000000"
-    },
-    {
-      "type": "color",
-      "id": "sticky_header_bg",
-      "label": "Sticky Header Background (On Scroll)",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "sticky_text_color",
-      "label": "Sticky Header Text Color (On Scroll)",
-      "default": "#000000"
-    },
-    {
-      "type": "header",
-      "content": "Logo Settings"
-    },
-    {
-      "type": "image_picker",
-      "id": "logo_image",
-      "label": "Logo Image"
-    },
-    {
-      "type": "range",
-      "id": "logo_width",
-      "min": 50,
-      "max": 350,
-      "step": 5,
-      "unit": "px",
-      "label": "Desktop Logo Width",
-      "default": 160
-    },
-    {
-      "type": "number",
-      "id": "logo_height",
-      "label": "Logo Height (px, Leave blank for auto)"
-    },
-    {
-      "type": "range",
-      "id": "mobile_logo_width",
-      "min": 40,
-      "max": 220,
-      "step": 5,
-      "unit": "px",
-      "label": "Mobile Logo Width",
-      "default": 120
-    },
-    {
-      "type": "text",
-      "id": "logo_text",
-      "label": "Logo Text (Fallback)",
-      "default": "BAGKIN"
-    },
-    {
-      "type": "header",
-      "content": "Header Menu & Icons"
-    },
-    {
-      "type": "link_list",
-      "id": "menu_linklist",
-      "label": "Header Menu",
-      "default": "main-menu"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_search_icon",
-      "label": "Show Search Icon",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_account_icon",
-      "label": "Show Account Icon",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_wishlist_icon",
-      "label": "Show Wishlist Icon",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_cart_icon",
-      "label": "Show Cart Icon",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "mobile_show_search_cart_only",
-      "label": "Mobile: Show Search & Cart Only",
-      "default": true
-    }
+    { "type": "header", "content": "Theme Colors & Branding" },
+    { "type": "color", "id": "primary_color", "label": "Primary Accent Color", "default": "#F0950A" },
+    { "type": "color", "id": "header_bg", "label": "Header Initial Background", "default": "#EAE6DF" },
+    { "type": "color", "id": "header_text_color", "label": "Header Initial Text Color", "default": "#000000" },
+    { "type": "color", "id": "sticky_header_bg", "label": "Sticky Header Background (On Scroll)", "default": "#ffffff" },
+    { "type": "color", "id": "sticky_text_color", "label": "Sticky Header Text Color (On Scroll)", "default": "#000000" },
+    { "type": "header", "content": "Logo Settings" },
+    { "type": "image_picker", "id": "logo_image", "label": "Logo Image" },
+    { "type": "range", "id": "logo_width", "min": 50, "max": 350, "step": 5, "unit": "px", "label": "Desktop Logo Width", "default": 160 },
+    { "type": "number", "id": "logo_height", "label": "Logo Height (px, blank = auto)" },
+    { "type": "range", "id": "mobile_logo_width", "min": 40, "max": 220, "step": 5, "unit": "px", "label": "Mobile Logo Width", "default": 120 },
+    { "type": "text", "id": "logo_text", "label": "Logo Text (Fallback)", "default": "BAGKIN" },
+    { "type": "header", "content": "Header Menu & Icons" },
+    { "type": "link_list", "id": "menu_linklist", "label": "Header Menu", "default": "main-menu" },
+    { "type": "checkbox", "id": "show_search_icon", "label": "Show Search Icon", "default": true },
+    { "type": "checkbox", "id": "show_account_icon", "label": "Show Account Icon", "default": true },
+    { "type": "checkbox", "id": "show_wishlist_icon", "label": "Show Wishlist Icon", "default": true },
+    { "type": "checkbox", "id": "show_cart_icon", "label": "Show Cart Icon", "default": true },
+    { "type": "checkbox", "id": "mobile_show_search_cart_only", "label": "Mobile: Show Search & Cart Only", "default": true }
   ],
-  "presets": [
-    {
-      "name": "Bagkin Header Only"
-    }
-  ]
+  "presets": [{ "name": "Bagkin Header Only" }]
 }
 {% endschema %}
