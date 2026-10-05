@@ -279,10 +279,80 @@
         "enable_autoplay": true,
         "autoplay_speed": 5000
       }
+    },
+    "bagkin_promo_banners_Fc3PaB": {
+      "type": "bagkin-promo-banners",
+      "blocks": {
+        "banner_hq4qBh": {
+          "type": "banner",
+          "settings": {
+            "title": "Amazing leather\nbag",
+            "title_color": "#000000",
+            "button_text": "SHOP NOW",
+            "button_link": "",
+            "button_bg_color": "#000000",
+            "button_text_color": "#ffffff",
+            "card_bg_color": "#f5f5f5"
+          }
+        },
+        "banner_rpqxjb": {
+          "type": "banner",
+          "settings": {
+            "title": "Crossbody Zara\nbag",
+            "title_color": "#000000",
+            "button_text": "SHOP NOW",
+            "button_link": "",
+            "button_bg_color": "#000000",
+            "button_text_color": "#ffffff",
+            "card_bg_color": "#f5f5f5"
+          }
+        }
+      },
+      "block_order": [
+        "banner_hq4qBh",
+        "banner_rpqxjb"
+      ],
+      "name": "Bagkin Promo Banners",
+      "settings": {
+        "section_bg_color": "#ffffff",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
+    },
+    "bagkin_bestseller_grid_ETy9RE": {
+      "type": "bagkin-bestseller-grid",
+      "name": "Bagkin Best Seller Grid",
+      "settings": {
+        "title": "Best Seller",
+        "title_font_size": 32,
+        "title_color": "#000000",
+        "show_line": true,
+        "line_color": "#F0950A",
+        "collection": "",
+        "products_to_show": 4,
+        "columns_desktop": 4,
+        "columns_tablet": 3,
+        "columns_mobile": "2",
+        "show_sale_badge": true,
+        "sale_badge_bg": "#e63946",
+        "show_swatches": true,
+        "show_secondary_image": true,
+        "show_hover_actions": true,
+        "show_cart_action": true,
+        "show_quickview_action": true,
+        "show_wishlist_action": true,
+        "primary_accent": "#F0950A",
+        "sale_price_color": "#F0950A",
+        "section_bg_color": "#ffffff",
+        "padding_top": 50,
+        "padding_bottom": 50
+      }
     }
   },
   "order": [
     "product_list_fa6P9H",
-    "bagkin_header_banner_p8XwqE"
+    "bagkin_header_banner_p8XwqE",
+    "bagkin_promo_banners_Fc3PaB",
+    "bagkin_bestseller_grid_ETy9RE"
   ]
 }
