@@ -4,6 +4,9 @@
   - Custom font family Jost loaded via Google Fonts
   - Primary color #F0950A, Secondary color Black (#000000)
   - Smooth animation sticky header on scroll
+  - Customizable logo width & height in theme editor
+  - Toggle switches to enable/disable Search, Account, Wishlist & Cart icons
+  - Mobile mode: options to clean up actions and show only Search & Cart (Add to Cart)
   - 5 Editable slides with customizable image, subtitle, title, description, button text & link
   - Full theme editor schema settings
 {% endcomment %}
@@ -76,7 +79,7 @@
     }
   }
 
-  /* Logo */
+  /* Logo Styling */
   .bagkin-logo a {
     text-decoration: none;
     display: flex;
@@ -84,8 +87,9 @@
   }
 
   .bagkin-logo-img {
-    max-height: 45px;
-    width: auto;
+    width: {{ section.settings.logo_width | default: 160 }}px;
+    height: {% if section.settings.logo_height != blank %}{{ section.settings.logo_height }}px{% else %}auto{% endif %};
+    max-width: 100%;
     object-fit: contain;
   }
 
@@ -471,6 +475,18 @@
       display: block;
     }
 
+    /* Mobile specific icon rules */
+    {% if section.settings.mobile_show_search_cart_only %}
+      .bagkin-icon-account,
+      .bagkin-icon-wishlist {
+        display: none !important;
+      }
+    {% endif %}
+
+    .bagkin-logo-img {
+      width: {{ section.settings.mobile_logo_width | default: 120 }}px;
+    }
+
     .bagkin-hero-slider {
       min-height: auto;
       padding-top: 20px;
@@ -543,7 +559,7 @@
         <a href="{{ routes.root_url }}">
           {% if section.settings.logo_image != blank %}
             <img
-              src="{{ section.settings.logo_image | image_url: width: 300 }}"
+              src="{{ section.settings.logo_image | image_url: width: 600 }}"
               alt="{{ shop.name }}"
               class="bagkin-logo-img"
               loading="eager"
@@ -575,37 +591,45 @@
 
       <div class="bagkin-actions">
         <!-- Search Icon -->
-        <a href="{{ routes.search_url }}" class="bagkin-icon-btn" aria-label="Search">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-        </a>
+        {% if section.settings.show_search_icon %}
+          <a href="{{ routes.search_url }}" class="bagkin-icon-btn bagkin-icon-search" aria-label="Search">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </a>
+        {% endif %}
 
         <!-- Account Icon -->
-        <a href="{{ routes.account_url }}" class="bagkin-icon-btn" aria-label="Account">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-        </a>
+        {% if section.settings.show_account_icon %}
+          <a href="{{ routes.account_url }}" class="bagkin-icon-btn bagkin-icon-account" aria-label="Account">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </a>
+        {% endif %}
 
         <!-- Wishlist / Heart Icon -->
-        <a href="#" class="bagkin-icon-btn" aria-label="Wishlist">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-        </a>
+        {% if section.settings.show_wishlist_icon %}
+          <a href="#" class="bagkin-icon-btn bagkin-icon-wishlist" aria-label="Wishlist">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </a>
+        {% endif %}
 
         <!-- Cart Icon with Badge -->
-        <a href="{{ routes.cart_url }}" class="bagkin-icon-btn" aria-label="Cart">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <path d="M16 10a4 4 0 0 1-8 0"></path>
-          </svg>
-          <span class="bagkin-cart-badge">{{ cart.item_count | default: 0 }}</span>
-        </a>
+        {% if section.settings.show_cart_icon %}
+          <a href="{{ routes.cart_url }}" class="bagkin-icon-btn bagkin-icon-cart" aria-label="Cart">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span class="bagkin-cart-badge">{{ cart.item_count | default: 0 }}</span>
+          </a>
+        {% endif %}
 
         <!-- Mobile Hamburger -->
         <button class="bagkin-hamburger" id="bagkinHamburger" aria-label="Toggle Menu">
@@ -859,12 +883,38 @@
     },
     {
       "type": "header",
-      "content": "Header Configuration"
+      "content": "Logo Settings"
     },
     {
       "type": "image_picker",
       "id": "logo_image",
       "label": "Logo Image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 50,
+      "max": 350,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Logo Width",
+      "default": 160
+    },
+    {
+      "type": "number",
+      "id": "logo_height",
+      "label": "Logo Height (px, Leave blank for auto)",
+      "info": "Optional fixed height in pixels."
+    },
+    {
+      "type": "range",
+      "id": "mobile_logo_width",
+      "min": 40,
+      "max": 220,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Logo Width",
+      "default": 120
     },
     {
       "type": "text",
@@ -873,10 +923,48 @@
       "default": "BAGKIN"
     },
     {
+      "type": "header",
+      "content": "Header Menu & Icons Customization"
+    },
+    {
       "type": "link_list",
       "id": "menu_linklist",
       "label": "Header Menu",
       "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search_icon",
+      "label": "Show Search Icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account_icon",
+      "label": "Show Account Icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist_icon",
+      "label": "Show Wishlist Icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart_icon",
+      "label": "Show Cart Icon",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Mobile Header Display"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_show_search_cart_only",
+      "label": "Mobile: Show Search & Cart Only (Hide Account/Wishlist)",
+      "default": true
     },
     {
       "type": "header",
