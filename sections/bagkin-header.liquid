@@ -1,0 +1,573 @@
+{% comment %}
+  Bagkin Standalone Custom Header Section
+  - Mobile friendly & 100% responsive
+  - Custom font family Jost loaded via Google Fonts
+  - Sticky header on scroll with smooth animation
+  - Customizable background colors & text colors
+  - Customizable logo width & height
+  - Toggle switches for Search, Account, Wishlist & Cart icons
+{% endcomment %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+{% style %}
+  :root {
+    --bagkin-font: 'Jost', sans-serif;
+    --bagkin-primary: {{ section.settings.primary_color | default: '#F0950A' }};
+    --bagkin-secondary: {{ section.settings.secondary_color | default: '#000000' }};
+  }
+
+  .bagkin-header-standalone * {
+    font-family: var(--bagkin-font);
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .bagkin-header-standalone {
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: {{ section.settings.header_bg | default: '#EAE6DF' }};
+    transition: all 0.4s ease;
+  }
+
+  .bagkin-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 5%;
+    width: 100%;
+    transition: all 0.3s ease;
+  }
+
+  /* Sticky Scrolled State */
+  .bagkin-header-standalone.is-sticky {
+    background-color: {{ section.settings.sticky_header_bg | default: '#ffffff' }};
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  }
+
+  .bagkin-header-standalone.is-sticky .bagkin-header-inner {
+    padding: 14px 5%;
+  }
+
+  .bagkin-header-standalone.is-sticky .bagkin-nav-item a,
+  .bagkin-header-standalone.is-sticky .bagkin-icon-btn,
+  .bagkin-header-standalone.is-sticky .bagkin-logo-text,
+  .bagkin-header-standalone.is-sticky .bagkin-hamburger {
+    color: {{ section.settings.sticky_text_color | default: '#000000' }};
+  }
+
+  /* Logo Styling */
+  .bagkin-logo a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+  }
+
+  .bagkin-logo-img {
+    width: {{ section.settings.logo_width | default: 160 }}px;
+    height: {% if section.settings.logo_height != blank %}{{ section.settings.logo_height }}px{% else %}auto{% endif %};
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+  .bagkin-logo-text {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: {{ section.settings.header_text_color | default: '#000000' }};
+    text-transform: uppercase;
+  }
+
+  /* Navigation Menu */
+  .bagkin-nav {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+
+  .bagkin-nav-list {
+    display: flex;
+    list-style: none;
+    gap: 32px;
+    align-items: center;
+  }
+
+  .bagkin-nav-item a {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: {{ section.settings.header_text_color | default: '#000000' }};
+    text-decoration: none;
+    position: relative;
+    padding: 4px 0;
+    transition: color 0.3s ease;
+  }
+
+  .bagkin-nav-item a::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--bagkin-primary);
+    transition: width 0.3s ease;
+  }
+
+  .bagkin-nav-item a:hover {
+    color: var(--bagkin-primary);
+  }
+
+  .bagkin-nav-item a:hover::after {
+    width: 100%;
+  }
+
+  /* Action Icons */
+  .bagkin-actions {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .bagkin-icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: {{ section.settings.header_text_color | default: '#000000' }};
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    transition: transform 0.2s ease, color 0.3s ease;
+    text-decoration: none;
+  }
+
+  .bagkin-icon-btn:hover {
+    color: var(--bagkin-primary);
+    transform: translateY(-2px);
+  }
+
+  .bagkin-icon-btn svg {
+    width: 22px;
+    height: 22px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 1.8;
+  }
+
+  .bagkin-cart-badge {
+    position: absolute;
+    top: -2px;
+    right: -4px;
+    background-color: var(--bagkin-primary);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .bagkin-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    color: {{ section.settings.header_text_color | default: '#000000' }};
+  }
+
+  .bagkin-hamburger svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  /* Mobile Drawer Menu */
+  .bagkin-mobile-menu {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    max-width: 320px;
+    height: 100vh;
+    background-color: #ffffff;
+    z-index: 2000;
+    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.15);
+    transition: left 0.4s ease;
+    padding: 30px 24px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bagkin-mobile-menu.is-active {
+    left: 0;
+  }
+
+  .bagkin-mobile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+  }
+
+  .bagkin-close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #000;
+  }
+
+  .bagkin-mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .bagkin-mobile-nav a {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #000;
+    text-decoration: none;
+  }
+
+  .bagkin-mobile-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .bagkin-mobile-overlay.is-active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media screen and (max-width: 991px) {
+    .bagkin-nav {
+      display: none;
+    }
+    .bagkin-hamburger {
+      display: block;
+    }
+    {% if section.settings.mobile_show_search_cart_only %}
+      .bagkin-icon-account,
+      .bagkin-icon-wishlist {
+        display: none !important;
+      }
+    {% endif %}
+    .bagkin-logo-img {
+      width: {{ section.settings.mobile_logo_width | default: 120 }}px;
+    }
+  }
+
+  @media screen and (max-width: 480px) {
+    .bagkin-header-inner {
+      padding: 16px 4%;
+    }
+    .bagkin-logo-text {
+      font-size: 24px;
+    }
+  }
+{% endstyle %}
+
+<header class="bagkin-header-standalone" id="bagkinHeaderStandalone">
+  <div class="bagkin-header-inner">
+    <div class="bagkin-logo">
+      <a href="{{ routes.root_url }}">
+        {% if section.settings.logo_image != blank %}
+          <img
+            src="{{ section.settings.logo_image | image_url: width: 600 }}"
+            alt="{{ shop.name }}"
+            class="bagkin-logo-img"
+            loading="eager"
+          >
+        {% else %}
+          <span class="bagkin-logo-text">{{ section.settings.logo_text | default: shop.name }}</span>
+        {% endif %}
+      </a>
+    </div>
+
+    <nav class="bagkin-nav">
+      <ul class="bagkin-nav-list">
+        {% assign main_menu = linklists[section.settings.menu_linklist] %}
+        {% if main_menu.links.size > 0 %}
+          {% for link in main_menu.links %}
+            <li class="bagkin-nav-item">
+              <a href="{{ link.url }}">{{ link.title }}</a>
+            </li>
+          {% endfor %}
+        {% else %}
+          <li class="bagkin-nav-item"><a href="#">HOME</a></li>
+          <li class="bagkin-nav-item"><a href="#">SHOPS</a></li>
+          <li class="bagkin-nav-item"><a href="#">PRODUCTS</a></li>
+          <li class="bagkin-nav-item"><a href="#">BLOG</a></li>
+          <li class="bagkin-nav-item"><a href="#">PAGES</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+
+    <div class="bagkin-actions">
+      {% if section.settings.show_search_icon %}
+        <a href="{{ routes.search_url }}" class="bagkin-icon-btn bagkin-icon-search" aria-label="Search">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </a>
+      {% endif %}
+
+      {% if section.settings.show_account_icon %}
+        <a href="{{ routes.account_url }}" class="bagkin-icon-btn bagkin-icon-account" aria-label="Account">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </a>
+      {% endif %}
+
+      {% if section.settings.show_wishlist_icon %}
+        <a href="#" class="bagkin-icon-btn bagkin-icon-wishlist" aria-label="Wishlist">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+          </svg>
+        </a>
+      {% endif %}
+
+      {% if section.settings.show_cart_icon %}
+        <a href="{{ routes.cart_url }}" class="bagkin-icon-btn bagkin-icon-cart" aria-label="Cart">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <path d="M16 10a4 4 0 0 1-8 0"></path>
+          </svg>
+          <span class="bagkin-cart-badge">{{ cart.item_count | default: 0 }}</span>
+        </a>
+      {% endif %}
+
+      <button class="bagkin-hamburger" id="bagkinStandaloneHamburger" aria-label="Toggle Menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- MOBILE DRAWER MENU -->
+<div class="bagkin-mobile-overlay" id="bagkinStandaloneOverlay"></div>
+<div class="bagkin-mobile-menu" id="bagkinStandaloneMobileMenu">
+  <div class="bagkin-mobile-header">
+    <span class="bagkin-logo-text" style="color: #000;">{{ section.settings.logo_text | default: shop.name }}</span>
+    <button class="bagkin-close-btn" id="bagkinStandaloneCloseBtn">&times;</button>
+  </div>
+  <nav class="bagkin-mobile-nav">
+    {% assign main_menu = linklists[section.settings.menu_linklist] %}
+    {% if main_menu.links.size > 0 %}
+      {% for link in main_menu.links %}
+        <a href="{{ link.url }}">{{ link.title }}</a>
+      {% endfor %}
+    {% else %}
+      <a href="#">HOME</a>
+      <a href="#">SHOPS</a>
+      <a href="#">PRODUCTS</a>
+      <a href="#">BLOG</a>
+      <a href="#">PAGES</a>
+    {% endif %}
+  </nav>
+</div>
+
+<script>
+  (function () {
+    const header = document.getElementById('bagkinHeaderStandalone');
+    if (!header) return;
+
+    function handleScroll() {
+      if (window.scrollY > 30) {
+        header.classList.add('is-sticky');
+      } else {
+        header.classList.remove('is-sticky');
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+
+    // Mobile menu
+    const hamburger = document.getElementById('bagkinStandaloneHamburger');
+    const closeBtn = document.getElementById('bagkinStandaloneCloseBtn');
+    const mobileMenu = document.getElementById('bagkinStandaloneMobileMenu');
+    const overlay = document.getElementById('bagkinStandaloneOverlay');
+
+    if (hamburger && mobileMenu && overlay) {
+      hamburger.addEventListener('click', function () {
+        mobileMenu.classList.add('is-active');
+        overlay.classList.add('is-active');
+      });
+    }
+
+    if (closeBtn && mobileMenu && overlay) {
+      closeBtn.addEventListener('click', function () {
+        mobileMenu.classList.remove('is-active');
+        overlay.classList.remove('is-active');
+      });
+    }
+
+    if (overlay && mobileMenu) {
+      overlay.addEventListener('click', function () {
+        mobileMenu.classList.remove('is-active');
+        overlay.classList.remove('is-active');
+      });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Bagkin Header Only",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Theme Colors & Branding"
+    },
+    {
+      "type": "color",
+      "id": "primary_color",
+      "label": "Primary Accent Color",
+      "default": "#F0950A"
+    },
+    {
+      "type": "color",
+      "id": "header_bg",
+      "label": "Header Initial Background",
+      "default": "#EAE6DF"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Header Initial Text Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "sticky_header_bg",
+      "label": "Sticky Header Background (On Scroll)",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "sticky_text_color",
+      "label": "Sticky Header Text Color (On Scroll)",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Logo Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "Logo Image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "min": 50,
+      "max": 350,
+      "step": 5,
+      "unit": "px",
+      "label": "Desktop Logo Width",
+      "default": 160
+    },
+    {
+      "type": "number",
+      "id": "logo_height",
+      "label": "Logo Height (px, Leave blank for auto)"
+    },
+    {
+      "type": "range",
+      "id": "mobile_logo_width",
+      "min": 40,
+      "max": 220,
+      "step": 5,
+      "unit": "px",
+      "label": "Mobile Logo Width",
+      "default": 120
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo Text (Fallback)",
+      "default": "BAGKIN"
+    },
+    {
+      "type": "header",
+      "content": "Header Menu & Icons"
+    },
+    {
+      "type": "link_list",
+      "id": "menu_linklist",
+      "label": "Header Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search_icon",
+      "label": "Show Search Icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account_icon",
+      "label": "Show Account Icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist_icon",
+      "label": "Show Wishlist Icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart_icon",
+      "label": "Show Cart Icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_show_search_cart_only",
+      "label": "Mobile: Show Search & Cart Only",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bagkin Header Only"
+    }
+  ]
+}
+{% endschema %}
