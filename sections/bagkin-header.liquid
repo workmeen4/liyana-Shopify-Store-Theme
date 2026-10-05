@@ -14,7 +14,7 @@
 
 <style>
   /* ============================================================
-     BAGKIN HEADER — All CSS in a raw style tag
+     BAGKIN HEADER â€” All CSS in a raw style tag
      Reason: Shopify scopes selectors with #shopify-section-ID
      which breaks position:fixed elements on desktop.
   ============================================================ */
@@ -224,6 +224,223 @@
     .bagkin-header-inner { padding: 16px 4%; }
     .bagkin-logo-text { font-size: 24px; }
   }
+  /* --- CART DRAWER --- */
+  .bagkin-cart-drawer {
+    position: fixed; top: 0; right: -100%;
+    width: 90%; max-width: 400px; height: 100vh;
+    background-color: #fff;
+    z-index: 99999;
+    box-shadow: -4px 0 25px rgba(0,0,0,0.15);
+    transition: right 0.4s ease;
+    display: flex; flex-direction: column;
+  }
+  .bagkin-cart-drawer.is-active { right: 0; }
+  
+  .bagkin-cart-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px; border-bottom: 1px solid #eee;
+  }
+  .bagkin-cart-title { font-size: 22px; font-weight: 600; margin: 0; color: #000; }
+  .bagkin-cart-close {
+    background: none; border: none; font-size: 24px; cursor: pointer; color: #000;
+  }
+  
+  .bagkin-cart-body {
+    flex: 1; overflow-y: auto; padding: 24px;
+    display: flex; flex-direction: column;
+  }
+  
+  /* Empty State */
+  .bagkin-cart-empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; height: 100%; gap: 20px; padding: 20px;
+  }
+  .bagkin-cart-empty svg { width: 80px; height: 80px; fill: #ddd; }
+  .bagkin-cart-empty h3 { font-size: 24px; font-weight: 600; margin: 0; }
+  .bagkin-cart-empty p { font-size: 14px; color: #666; margin: 0; line-height: 1.5; }
+  .bagkin-cart-empty .bagkin-btn {
+    background: #000; color: #fff; text-transform: uppercase; font-weight: 600;
+    padding: 12px 24px; border-radius: 4px; text-decoration: none; font-size: 14px;
+    margin-top: 10px; display: inline-block;
+  }
+
+  /* Filled State */
+  .bagkin-shipping-bar { margin-bottom: 20px; }
+  .bagkin-shipping-text { font-size: 13px; color: #333; margin-bottom: 8px; }
+  .bagkin-shipping-progress {
+    width: 100%; height: 4px; background: #eee; border-radius: 2px; position: relative;
+  }
+  .bagkin-shipping-progress-inner {
+    height: 100%; background: #000; border-radius: 2px; width: 100%;
+  }
+  .bagkin-shipping-icon {
+    position: absolute; right: 0; top: 50%; transform: translate(50%, -50%);
+    background: #000; color: #fff; width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bagkin-shipping-icon svg { width: 14px; height: 14px; fill: currentColor; }
+
+  .bagkin-cart-items { display: flex; flex-direction: column; gap: 20px; }
+  .bagkin-cart-item { display: flex; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+  .bagkin-cart-item-img { width: 80px; height: 80px; object-fit: cover; background: #f5f5f5; border-radius: 4px; }
+  .bagkin-cart-item-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .bagkin-cart-item-title { font-size: 15px; font-weight: 600; color: #000; text-decoration: none; margin: 0 0 4px 0; display: block; }
+  .bagkin-cart-item-price { font-size: 14px; color: #000; margin: 0 0 10px 0; }
+  .bagkin-cart-item-actions { display: flex; justify-content: space-between; align-items: center; }
+  
+  .bagkin-qty-selector {
+    display: flex; align-items: center; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;
+  }
+  .bagkin-qty-btn {
+    background: #fff; border: none; width: 28px; height: 28px; display: flex;
+    align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: #666;
+  }
+  .bagkin-qty-input {
+    width: 32px; height: 28px; border: none; text-align: center; font-size: 13px; font-weight: 600;
+    pointer-events: none; -moz-appearance: textfield;
+  }
+  
+  .bagkin-cart-item-remove { font-size: 12px; color: #999; text-decoration: underline; }
+
+  /* Upsell */
+  .bagkin-cart-upsell { margin-top: 30px; }
+  .bagkin-cart-upsell h4 { font-size: 16px; font-weight: 600; margin: 0 0 16px 0; }
+  .bagkin-upsell-item { display: flex; gap: 16px; align-items: center; }
+  .bagkin-upsell-img { width: 70px; height: 70px; object-fit: cover; background: #f5f5f5; border-radius: 4px; }
+  .bagkin-upsell-info { flex: 1; }
+  .bagkin-upsell-title { font-size: 14px; font-weight: 600; margin: 0 0 4px 0; display: block; text-decoration: none; color: #000; }
+  .bagkin-upsell-price { font-size: 13px; color: #f0950a; margin: 0 0 6px 0; }
+  .bagkin-upsell-compare { color: #999; text-decoration: line-through; margin-left: 6px; font-size: 12px; }
+  .bagkin-upsell-add { font-size: 12px; color: #666; text-decoration: underline; }
+
+  .bagkin-cart-footer { padding: 24px; border-top: 1px solid #eee; background: #fff; }
+  .bagkin-order-note {
+    display: flex; align-items: center; gap: 8px; font-size: 13px; color: #666; margin-bottom: 20px; cursor: pointer;
+  }
+  .bagkin-cart-totals { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .bagkin-cart-totals span { font-size: 16px; font-weight: 600; color: #000; }
+  .bagkin-cart-totals strong { font-size: 18px; font-weight: 700; color: #000; }
+  .bagkin-cart-tax { font-size: 12px; color: #666; margin: 0 0 20px 0; }
+  .bagkin-cart-tax a { color: #0000ee; }
+  
+  .bagkin-cart-buttons { display: flex; flex-direction: column; gap: 10px; }
+  .bagkin-btn-checkout {
+    background: #000; color: #fff; text-align: center; padding: 14px;
+    font-weight: 600; text-transform: uppercase; text-decoration: none; border-radius: 4px;
+  }
+  .bagkin-btn-viewcart {
+    background: #fff; color: #000; text-align: center; padding: 14px; border: 1px solid #000;
+    font-weight: 600; text-transform: uppercase; text-decoration: none; border-radius: 4px;
+  }
+  /* --- CART DRAWER --- */
+  .bagkin-cart-drawer {
+    position: fixed; top: 0; right: -100%;
+    width: 90%; max-width: 400px; height: 100vh;
+    background-color: #fff;
+    z-index: 99999;
+    box-shadow: -4px 0 25px rgba(0,0,0,0.15);
+    transition: right 0.4s ease;
+    display: flex; flex-direction: column;
+  }
+  .bagkin-cart-drawer.is-active { right: 0; }
+  
+  .bagkin-cart-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px; border-bottom: 1px solid #eee;
+  }
+  .bagkin-cart-title { font-size: 22px; font-weight: 600; margin: 0; color: #000; }
+  .bagkin-cart-close {
+    background: none; border: none; font-size: 24px; cursor: pointer; color: #000;
+  }
+  
+  .bagkin-cart-body {
+    flex: 1; overflow-y: auto; padding: 24px;
+    display: flex; flex-direction: column;
+  }
+  
+  /* Empty State */
+  .bagkin-cart-empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; height: 100%; gap: 20px; padding: 20px;
+  }
+  .bagkin-cart-empty svg { width: 80px; height: 80px; fill: #ddd; }
+  .bagkin-cart-empty h3 { font-size: 24px; font-weight: 600; margin: 0; }
+  .bagkin-cart-empty p { font-size: 14px; color: #666; margin: 0; line-height: 1.5; }
+  .bagkin-cart-empty .bagkin-btn {
+    background: #000; color: #fff; text-transform: uppercase; font-weight: 600;
+    padding: 12px 24px; border-radius: 4px; text-decoration: none; font-size: 14px;
+    margin-top: 10px; display: inline-block;
+  }
+
+  /* Filled State */
+  .bagkin-shipping-bar { margin-bottom: 20px; }
+  .bagkin-shipping-text { font-size: 13px; color: #333; margin-bottom: 8px; }
+  .bagkin-shipping-progress {
+    width: 100%; height: 4px; background: #eee; border-radius: 2px; position: relative;
+  }
+  .bagkin-shipping-progress-inner {
+    height: 100%; background: #000; border-radius: 2px; width: 100%;
+  }
+  .bagkin-shipping-icon {
+    position: absolute; right: 0; top: 50%; transform: translate(50%, -50%);
+    background: #000; color: #fff; width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .bagkin-shipping-icon svg { width: 14px; height: 14px; fill: currentColor; }
+
+  .bagkin-cart-items { display: flex; flex-direction: column; gap: 20px; }
+  .bagkin-cart-item { display: flex; gap: 16px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+  .bagkin-cart-item-img { width: 80px; height: 80px; object-fit: cover; background: #f5f5f5; border-radius: 4px; }
+  .bagkin-cart-item-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .bagkin-cart-item-title { font-size: 15px; font-weight: 600; color: #000; text-decoration: none; margin: 0 0 4px 0; display: block; }
+  .bagkin-cart-item-price { font-size: 14px; color: #000; margin: 0 0 10px 0; }
+  .bagkin-cart-item-actions { display: flex; justify-content: space-between; align-items: center; }
+  
+  .bagkin-qty-selector {
+    display: flex; align-items: center; border: 1px solid #ddd; border-radius: 4px; overflow: hidden;
+  }
+  .bagkin-qty-btn {
+    background: #fff; border: none; width: 28px; height: 28px; display: flex;
+    align-items: center; justify-content: center; cursor: pointer; font-size: 16px; color: #666;
+    text-decoration: none;
+  }
+  .bagkin-qty-input {
+    width: 32px; height: 28px; border: none; text-align: center; font-size: 13px; font-weight: 600;
+    pointer-events: none; -moz-appearance: textfield;
+  }
+  
+  .bagkin-cart-item-remove { font-size: 12px; color: #999; text-decoration: underline; }
+
+  /* Upsell */
+  .bagkin-cart-upsell { margin-top: 30px; }
+  .bagkin-cart-upsell h4 { font-size: 16px; font-weight: 600; margin: 0 0 16px 0; }
+  .bagkin-upsell-item { display: flex; gap: 16px; align-items: center; }
+  .bagkin-upsell-img { width: 70px; height: 70px; object-fit: cover; background: #f5f5f5; border-radius: 4px; }
+  .bagkin-upsell-info { flex: 1; }
+  .bagkin-upsell-title { font-size: 14px; font-weight: 600; margin: 0 0 4px 0; display: block; text-decoration: none; color: #000; }
+  .bagkin-upsell-price { font-size: 13px; color: #f0950a; margin: 0 0 6px 0; }
+  .bagkin-upsell-compare { color: #999; text-decoration: line-through; margin-left: 6px; font-size: 12px; }
+  .bagkin-upsell-add { font-size: 12px; color: #666; text-decoration: underline; }
+
+  .bagkin-cart-footer { padding: 24px; border-top: 1px solid #eee; background: #fff; }
+  .bagkin-order-note {
+    display: flex; align-items: center; gap: 8px; font-size: 13px; color: #666; margin-bottom: 20px; cursor: pointer;
+  }
+  .bagkin-cart-totals { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .bagkin-cart-totals span { font-size: 16px; font-weight: 600; color: #000; }
+  .bagkin-cart-totals strong { font-size: 18px; font-weight: 700; color: #000; }
+  .bagkin-cart-tax { font-size: 12px; color: #666; margin: 0 0 20px 0; }
+  .bagkin-cart-tax a { color: #0000ee; }
+  
+  .bagkin-cart-buttons { display: flex; flex-direction: column; gap: 10px; }
+  .bagkin-btn-checkout {
+    background: #000; color: #fff; text-align: center; padding: 14px; border: none; cursor: pointer;
+    font-weight: 600; text-transform: uppercase; text-decoration: none; border-radius: 4px; font-size: 14px;
+  }
+  .bagkin-btn-viewcart {
+    background: #fff; color: #000; text-align: center; padding: 14px; border: 1px solid #000;
+    font-weight: 600; text-transform: uppercase; text-decoration: none; border-radius: 4px; font-size: 14px;
+  }
 </style>
 
 <header class="bagkin-header-standalone" id="bagkinHeaderStandalone">
@@ -335,6 +552,101 @@
   </nav>
 </div>
 
+<!-- CART DRAWER -->
+<div class="bagkin-cart-drawer" id="bagkinCartDrawer">
+  <div class="bagkin-cart-header">
+    <h2 class="bagkin-cart-title">Shopping Cart</h2>
+    <button class="bagkin-cart-close" id="bagkinCartCloseBtn">&times;</button>
+  </div>
+  
+  <form action="{{ routes.cart_url }}" method="post" id="cart" class="bagkin-cart-body" style="padding:0;">
+    {% if cart.item_count == 0 %}
+      <div class="bagkin-cart-empty">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 8l-9-5-9 5v8l9 5 9-5V8zm-9-3.3l6.5 3.6-2.5 1.4-6.5-3.6 2.5-1.4zM4.3 9.4l4.2 2.3v5.6L4.3 15V9.4zm5.7 8.3v-5.6l2 1.1v5.6l-2-1.1zm3 1.6l-2-1.1v-5.6l2 1.1v5.6zm1-6.1l-6.5-3.6 2.5-1.4 6.5 3.6-2.5 1.4zm5.7-1.4v5.6l-4.2 2.3v-5.6l4.2-2.3z"/></svg>
+        <h3>Your cart is empty</h3>
+        <p>You may check out all the available products and buy some in the shop.</p>
+        <a href="{{ routes.all_products_collection_url }}" class="bagkin-btn">CONTINUE SHOPPING</a>
+      </div>
+    {% else %}
+      <div style="padding: 24px; flex: 1; overflow-y: auto;">
+        <div class="bagkin-shipping-bar">
+          <div class="bagkin-shipping-text">Congrats! You are eligible for FREE Shipping</div>
+          <div class="bagkin-shipping-progress">
+            <div class="bagkin-shipping-progress-inner"></div>
+            <div class="bagkin-shipping-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 17.27l-5.18 3.73 1.64-7.03L2 9.24l7.19-.61L12 2l2.81 6.63 7.19.61-5.46 4.73 1.64 7.03L12 17.27z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="bagkin-cart-items">
+          {% for item in cart.items %}
+            <div class="bagkin-cart-item">
+              {% if item.image %}
+                <img src="{{ item.image | image_url: width: 200 }}" class="bagkin-cart-item-img" alt="{{ item.title | escape }}">
+              {% endif %}
+              <div class="bagkin-cart-item-info">
+                <div>
+                  <a href="{{ item.url }}" class="bagkin-cart-item-title">{{ item.product.title }}</a>
+                  <p class="bagkin-cart-item-price">{{ item.final_line_price | money }}</p>
+                </div>
+                <div class="bagkin-cart-item-actions">
+                  <div class="bagkin-qty-selector">
+                    <a href="/cart/change?line={{ forloop.index }}&quantity={{ item.quantity | minus: 1 }}" class="bagkin-qty-btn">&minus;</a>
+                    <input type="number" name="updates[]" value="{{ item.quantity }}" class="bagkin-qty-input" min="0">
+                    <a href="/cart/change?line={{ forloop.index }}&quantity={{ item.quantity | plus: 1 }}" class="bagkin-qty-btn">&plus;</a>
+                  </div>
+                  <a href="/cart/change?line={{ forloop.index }}&quantity=0" class="bagkin-cart-item-remove">Remove</a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+
+        {% if section.settings.upsell_collection != blank %}
+          <div class="bagkin-cart-upsell">
+            <h4>You may also like</h4>
+            {% assign u_col = collections[section.settings.upsell_collection] %}
+            {% if u_col.products.size > 0 %}
+              <div class="bagkin-upsell-item">
+                <img src="{{ u_col.products.first.featured_image | image_url: width: 200 }}" class="bagkin-upsell-img" alt="">
+                <div class="bagkin-upsell-info">
+                  <a href="{{ u_col.products.first.url }}" class="bagkin-upsell-title">{{ u_col.products.first.title }}</a>
+                  <p class="bagkin-upsell-price">
+                    {{ u_col.products.first.price | money }} 
+                    {% if u_col.products.first.compare_at_price > u_col.products.first.price %}
+                      <span class="bagkin-upsell-compare">{{ u_col.products.first.compare_at_price | money }}</span>
+                    {% endif %}
+                  </p>
+                  <a href="{{ u_col.products.first.url }}" class="bagkin-upsell-add">+ Add to Cart</a>
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="bagkin-cart-footer">
+        <label class="bagkin-order-note" for="CartNote">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          Add order note
+        </label>
+        
+        <div class="bagkin-cart-totals">
+          <span>Total</span>
+          <strong>{{ cart.total_price | money }}</strong>
+        </div>
+        <p class="bagkin-cart-tax">Taxes and <a href="/policies/shipping-policy">shipping</a> calculated at checkout</p>
+        
+        <div class="bagkin-cart-buttons">
+          <button type="submit" name="checkout" class="bagkin-btn-checkout">Check Out</button>
+          <a href="{{ routes.cart_url }}" class="bagkin-btn-viewcart">View Cart</a>
+        </div>
+      </div>
+    {% endif %}
+  </form>
+</div>
+
 <script>
   (function () {
     var header = document.getElementById('bagkinHeaderStandalone');
@@ -378,7 +690,7 @@
     document.addEventListener('scroll', handleScroll, { passive: true });
     window.addEventListener('resize', updateSpacerHeight, { passive: true });
 
-    /* rAF polling — bulletproof fallback */
+    /* rAF polling â€” bulletproof fallback */
     var _last = -1;
     (function poll() {
       var s = getScroll();
@@ -401,6 +713,24 @@
     if (hamburger) hamburger.addEventListener('click', openMenu);
     if (closeBtn)  closeBtn.addEventListener('click', closeMenu);
     if (overlay)   overlay.addEventListener('click', closeMenu);
+
+    /* Cart drawer */
+    var cartIcon = document.querySelector('.bagkin-icon-cart');
+    var cartDrawer = document.getElementById('bagkinCartDrawer');
+    var cartClose = document.getElementById('bagkinCartCloseBtn');
+    
+    function openCart(e) {
+      if(e) e.preventDefault();
+      if(cartDrawer) cartDrawer.classList.add('is-active');
+      if(overlay) overlay.classList.add('is-active');
+    }
+    function closeCart() {
+      if(cartDrawer) cartDrawer.classList.remove('is-active');
+    }
+    
+    if(cartIcon) cartIcon.addEventListener('click', openCart);
+    if(cartClose) cartClose.addEventListener('click', closeCart);
+    if(overlay) overlay.addEventListener('click', closeCart);
   })();
 </script>
 
@@ -426,8 +756,11 @@
     { "type": "checkbox", "id": "show_account_icon", "label": "Show Account Icon", "default": true },
     { "type": "checkbox", "id": "show_wishlist_icon", "label": "Show Wishlist Icon", "default": true },
     { "type": "checkbox", "id": "show_cart_icon", "label": "Show Cart Icon", "default": true },
-    { "type": "checkbox", "id": "mobile_show_search_cart_only", "label": "Mobile: Show Search & Cart Only", "default": true }
+        { "type": "checkbox", "id": "mobile_show_search_cart_only", "label": "Mobile: Show Search & Cart Only", "default": true },
+    { "type": "header", "content": "Cart Drawer Settings" },
+    { "type": "collection", "id": "upsell_collection", "label": "Upsell Collection (You may also like)" }
   ],
   "presets": [{ "name": "Bagkin Header Only" }]
 }
 {% endschema %}
+
