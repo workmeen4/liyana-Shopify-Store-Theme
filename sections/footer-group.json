@@ -15,6 +15,7 @@
       "type": "bagkin-footer",
       "name": "Bagkin Footer",
       "settings": {
+        "footer_logo": "shopify://shop_images/liyana-1.svg",
         "logo_text": "BAGKIN",
         "tagline": "Sophisticated simplicity for the independent mind.",
         "social_twitter": "",
