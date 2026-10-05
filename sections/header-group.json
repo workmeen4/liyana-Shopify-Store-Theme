@@ -109,8 +109,8 @@
         "logo_text": "BAGKIN",
         "menu_linklist": "main-menu",
         "show_search_icon": true,
-        "show_account_icon": true,
-        "show_wishlist_icon": true,
+        "show_account_icon": false,
+        "show_wishlist_icon": false,
         "show_cart_icon": true,
         "mobile_show_search_cart_only": true
       }
