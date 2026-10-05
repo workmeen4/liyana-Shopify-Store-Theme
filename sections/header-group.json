@@ -175,10 +175,50 @@
         "enable_autoplay": true,
         "autoplay_speed": 5000
       }
+    },
+    "bagkin_promo_banners_wJt7Aw": {
+      "type": "bagkin-promo-banners",
+      "blocks": {
+        "banner_RhibLh": {
+          "type": "banner",
+          "settings": {
+            "title": "Amazing leather\nbag",
+            "title_color": "#000000",
+            "button_text": "SHOP NOW",
+            "button_link": "",
+            "button_bg_color": "#000000",
+            "button_text_color": "#ffffff",
+            "card_bg_color": "#f5f5f5"
+          }
+        },
+        "banner_k7bKfk": {
+          "type": "banner",
+          "settings": {
+            "title": "Crossbody Zara\nbag",
+            "title_color": "#000000",
+            "button_text": "SHOP NOW",
+            "button_link": "",
+            "button_bg_color": "#000000",
+            "button_text_color": "#ffffff",
+            "card_bg_color": "#f5f5f5"
+          }
+        }
+      },
+      "block_order": [
+        "banner_RhibLh",
+        "banner_k7bKfk"
+      ],
+      "name": "Bagkin Promo Banners",
+      "settings": {
+        "section_bg_color": "#ffffff",
+        "padding_top": 40,
+        "padding_bottom": 40
+      }
     }
   },
   "order": [
     "header_section",
-    "bagkin_header_banner_jL4JWW"
+    "bagkin_header_banner_jL4JWW",
+    "bagkin_promo_banners_wJt7Aw"
   ]
 }
