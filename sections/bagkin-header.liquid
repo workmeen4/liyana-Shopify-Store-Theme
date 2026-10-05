@@ -17,6 +17,10 @@
     --bagkin-font: 'Jost', sans-serif;
     --bagkin-primary: {{ section.settings.primary_color | default: '#F0950A' }};
     --bagkin-secondary: {{ section.settings.secondary_color | default: '#000000' }};
+    --bagkin-header-bg: {{ section.settings.header_bg | default: '#EAE6DF' }};
+    --bagkin-header-text: {{ section.settings.header_text_color | default: '#000000' }};
+    --bagkin-sticky-bg: {{ section.settings.sticky_header_bg | default: '#ffffff' }};
+    --bagkin-sticky-text: {{ section.settings.sticky_text_color | default: '#000000' }};
   }
 
   .bagkin-header-standalone * {
@@ -33,7 +37,7 @@
     left: 0;
     right: 0;
     z-index: 9999;
-    background-color: {{ section.settings.header_bg | default: '#EAE6DF' }};
+    background-color: var(--bagkin-header-bg);
     transition: background-color 0.4s ease, box-shadow 0.4s ease;
   }
 
@@ -48,7 +52,7 @@
 
   /* Sticky Scrolled State */
   .bagkin-header-standalone.is-sticky {
-    background-color: {{ section.settings.sticky_header_bg | default: '#ffffff' }};
+    background-color: var(--bagkin-sticky-bg) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   }
@@ -72,7 +76,12 @@
   .bagkin-header-standalone.is-sticky .bagkin-icon-btn,
   .bagkin-header-standalone.is-sticky .bagkin-logo-text,
   .bagkin-header-standalone.is-sticky .bagkin-hamburger {
-    color: {{ section.settings.sticky_text_color | default: '#000000' }};
+    color: var(--bagkin-sticky-text) !important;
+  }
+
+  .bagkin-header-standalone.is-sticky .bagkin-icon-btn svg {
+    stroke: var(--bagkin-sticky-text) !important;
+    color: var(--bagkin-sticky-text) !important;
   }
 
   /* Logo Styling */
@@ -93,7 +102,7 @@
     font-size: 30px;
     font-weight: 700;
     letter-spacing: 2px;
-    color: {{ section.settings.header_text_color | default: '#000000' }};
+    color: var(--bagkin-header-text);
     text-transform: uppercase;
   }
 
@@ -116,7 +125,7 @@
     font-weight: 600;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: {{ section.settings.header_text_color | default: '#000000' }};
+    color: var(--bagkin-header-text);
     text-decoration: none;
     position: relative;
     padding: 4px 0;
@@ -153,7 +162,7 @@
     background: none;
     border: none;
     cursor: pointer;
-    color: {{ section.settings.header_text_color | default: '#000000' }};
+    color: var(--bagkin-header-text);
     position: relative;
     display: flex;
     align-items: center;
