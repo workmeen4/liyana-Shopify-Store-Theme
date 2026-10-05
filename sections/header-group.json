@@ -104,6 +104,7 @@
         "header_text_color": "#000000",
         "sticky_header_bg": "{{ settings.color_palette.background }}",
         "sticky_text_color": "{{ settings.color_palette.foreground }}",
+        "logo_image": "shopify://shop_images/liyana-1.svg",
         "logo_width": 160,
         "mobile_logo_width": 120,
         "logo_text": "BAGKIN",
@@ -112,7 +113,8 @@
         "show_account_icon": false,
         "show_wishlist_icon": false,
         "show_cart_icon": true,
-        "mobile_show_search_cart_only": true
+        "mobile_show_search_cart_only": true,
+        "upsell_collection": ""
       }
     }
   },
