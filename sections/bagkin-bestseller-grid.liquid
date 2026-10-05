@@ -1,0 +1,612 @@
+{% comment %}
+  Bagkin Best Seller / Collection Products Section
+  - Custom Collection Grid Section with clean modern aesthetic
+  - Customizable title & subtitle underline accent
+  - Collection picker, products limit, columns count selector (2, 3, 4, or 5 columns)
+  - Customizable Sale Ribbon / Badge toggle (Show/Hide)
+  - Hover Action Buttons: Add to Cart, Quick View (Search), Wishlist with smooth animation
+  - NO top progress bar / red box lines (completely clean image top)
+  - 100% Mobile Responsive & Mobile Friendly
+{% endcomment %}
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+{% style %}
+  .bagkin-bestseller-section-{{ section.id }} {
+    width: 100%;
+    padding-top: {{ section.settings.padding_top }}px;
+    padding-bottom: {{ section.settings.padding_bottom }}px;
+    background-color: {{ section.settings.section_bg_color | default: '#ffffff' }};
+  }
+
+  .bagkin-bestseller-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+  }
+
+  /* --- SECTION HEADER & UNDERLINE --- */
+  .bagkin-bestseller-header {
+    text-align: center;
+    margin-bottom: 45px;
+  }
+
+  .bagkin-bestseller-title {
+    font-family: 'Jost', sans-serif;
+    font-size: {{ section.settings.title_font_size }}px;
+    font-weight: 700;
+    color: {{ section.settings.title_color | default: '#000000' }};
+    margin-bottom: 14px;
+    letter-spacing: -0.5px;
+  }
+
+  .bagkin-bestseller-line {
+    width: 60px;
+    height: 3px;
+    background-color: {{ section.settings.line_color | default: '#F0950A' }};
+    margin: 0 auto;
+    border-radius: 2px;
+  }
+
+  /* --- PRODUCT GRID LAYOUT --- */
+  .bagkin-product-grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.columns_desktop | default: 4 }}, 1fr);
+    gap: 30px;
+  }
+
+  /* --- PRODUCT CARD STYLES --- */
+  .bagkin-product-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    position: relative;
+    background: transparent;
+  }
+
+  /* Media / Image Box */
+  .bagkin-product-media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #f7f7f7;
+    overflow: hidden;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+  }
+
+  .bagkin-product-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 20px;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bagkin-product-card:hover .bagkin-product-img {
+    transform: scale(1.06);
+  }
+
+  /* Second Hover Image if Available */
+  .bagkin-product-img-secondary {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.5s ease, transform 0.6s ease;
+  }
+
+  .bagkin-product-card:hover .bagkin-product-img-secondary {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+
+  /* --- SALE RIBBON BADGE --- */
+  .bagkin-sale-ribbon {
+    position: absolute;
+    top: 18px;
+    right: -32px;
+    background-color: {{ section.settings.sale_badge_bg | default: '#e63946' }};
+    color: #ffffff;
+    font-family: 'Jost', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 34px;
+    transform: rotate(45deg);
+    z-index: 5;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    pointer-events: none;
+  }
+
+  /* --- HOVER ACTION BUTTONS (ADD TO CART, QUICK VIEW, WISHLIST) --- */
+  .bagkin-hover-actions {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 6;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .bagkin-product-card:hover .bagkin-hover-actions {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .bagkin-action-btn {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .bagkin-action-btn:hover {
+    background-color: {{ section.settings.primary_accent | default: '#F0950A' }};
+    color: #ffffff;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(240, 149, 10, 0.3);
+  }
+
+  .bagkin-action-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+
+  /* --- PRODUCT INFO (TITLE & PRICE) --- */
+  .bagkin-product-info {
+    text-align: center;
+    width: 100%;
+  }
+
+  .bagkin-product-title {
+    font-family: 'Jost', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000000;
+    margin-bottom: 8px;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .bagkin-product-card:hover .bagkin-product-title {
+    color: {{ section.settings.primary_accent | default: '#F0950A' }};
+  }
+
+  .bagkin-product-price {
+    font-family: 'Jost', sans-serif;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .bagkin-price-sale {
+    color: {{ section.settings.sale_price_color | default: '#F0950A' }};
+    font-weight: 600;
+  }
+
+  .bagkin-price-regular {
+    color: #888888;
+    text-decoration: line-through;
+    font-weight: 400;
+  }
+
+  .bagkin-price-normal {
+    color: #333333;
+    font-weight: 600;
+  }
+
+  /* --- RESPONSIVE MEDIA QUERIES --- */
+  @media screen and (max-width: 1024px) {
+    .bagkin-product-grid {
+      grid-template-columns: repeat({{ section.settings.columns_tablet | default: 3 }}, 1fr);
+      gap: 20px;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .bagkin-product-grid {
+      grid-template-columns: repeat({{ section.settings.columns_mobile | default: 2 }}, 1fr);
+      gap: 16px;
+    }
+
+    .bagkin-bestseller-title {
+      font-size: 24px;
+    }
+
+    /* On mobile show action buttons permanently or touch friendly */
+    .bagkin-hover-actions {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+      bottom: 12px;
+      gap: 8px;
+    }
+
+    .bagkin-action-btn {
+      width: 38px;
+      height: 38px;
+    }
+
+    .bagkin-action-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .bagkin-product-title {
+      font-size: 14px;
+    }
+
+    .bagkin-product-price {
+      font-size: 13px;
+    }
+  }
+{% endstyle %}
+
+<div class="bagkin-bestseller-section-{{ section.id }}">
+  <div class="bagkin-bestseller-container">
+    {% if section.settings.title != blank %}
+      <div class="bagkin-bestseller-header">
+        <h2 class="bagkin-bestseller-title">{{ section.settings.title }}</h2>
+        {% if section.settings.show_line %}
+          <div class="bagkin-bestseller-line"></div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="bagkin-product-grid">
+      {% assign selected_collection = collections[section.settings.collection] %}
+      {% assign limit = section.settings.products_to_show | default: 8 %}
+
+      {% if selected_collection != blank and selected_collection.products_count > 0 %}
+        {% for product in selected_collection.products limit: limit %}
+          <div class="bagkin-product-card">
+            <div class="bagkin-product-media">
+              {% comment %} Sale Badge Ribbon {% endcomment %}
+              {% if section.settings.show_sale_badge and product.compare_at_price > product.price %}
+                <span class="bagkin-sale-ribbon">Sale</span>
+              {% endif %}
+
+              {% comment %} Product Image {% endcomment %}
+              <img
+                src="{{ product.featured_image | image_url: width: 600 }}"
+                alt="{{ product.title | escape }}"
+                class="bagkin-product-img"
+                loading="lazy"
+              >
+
+              {% if product.images[1] != blank and section.settings.show_secondary_image %}
+                <img
+                  src="{{ product.images[1] | image_url: width: 600 }}"
+                  alt="{{ product.title | escape }}"
+                  class="bagkin-product-img-secondary"
+                  loading="lazy"
+                >
+              {% endif %}
+
+              {% comment %} Hover Action Buttons {% endcomment %}
+              {% if section.settings.show_hover_actions %}
+                <div class="bagkin-hover-actions">
+                  {% if section.settings.show_cart_action %}
+                    <form method="post" action="/cart/add" class="bagkin-add-to-cart-form">
+                      <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+                      <button type="submit" class="bagkin-action-btn" aria-label="Add to Cart" title="Add to Cart">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                          <line x1="3" y1="6" x2="21" y2="6"></line>
+                          <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                      </button>
+                    </form>
+                  {% endif %}
+
+                  {% if section.settings.show_quickview_action %}
+                    <a href="{{ product.url }}" class="bagkin-action-btn" aria-label="Quick View" title="Quick View">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                    </a>
+                  {% endif %}
+
+                  {% if section.settings.show_wishlist_action %}
+                    <button type="button" class="bagkin-action-btn" aria-label="Add to Wishlist" title="Add to Wishlist">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                      </svg>
+                    </button>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="bagkin-product-info">
+              <a href="{{ product.url }}" class="bagkin-product-title">{{ product.title }}</a>
+              <div class="bagkin-product-price">
+                {% if product.compare_at_price > product.price %}
+                  <span class="bagkin-price-sale">{{ product.price | money }}</span>
+                  <span class="bagkin-price-regular">{{ product.compare_at_price | money }}</span>
+                {% else %}
+                  <span class="bagkin-price-normal">{{ product.price | money }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <!-- Default Placeholder Products -->
+        {% for i in (1..limit) %}
+          <div class="bagkin-product-card">
+            <div class="bagkin-product-media">
+              {% if section.settings.show_sale_badge %}
+                <span class="bagkin-sale-ribbon">Sale</span>
+              {% endif %}
+
+              {{ 'product-' | append: i | placeholder_svg_tag: 'bagkin-product-img' }}
+
+              {% if section.settings.show_hover_actions %}
+                <div class="bagkin-hover-actions">
+                  {% if section.settings.show_cart_action %}
+                    <button class="bagkin-action-btn" aria-label="Add to Cart">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                      </svg>
+                    </button>
+                  {% endif %}
+
+                  {% if section.settings.show_quickview_action %}
+                    <button class="bagkin-action-btn" aria-label="Quick View">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                      </svg>
+                    </button>
+                  {% endif %}
+
+                  {% if section.settings.show_wishlist_action %}
+                    <button class="bagkin-action-btn" aria-label="Wishlist">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l8.78-8.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                      </svg>
+                    </button>
+                  {% endif %}
+                </div>
+              {% endif %}
+            </div>
+
+            <div class="bagkin-product-info">
+              <span class="bagkin-product-title">
+                {% cycle 'Amber Tote', 'Bella Bag', 'Chic Clutch', 'Dream Purse' %}
+              </span>
+              <div class="bagkin-product-price">
+                <span class="bagkin-price-sale">$60.00</span>
+                <span class="bagkin-price-regular">$80.00</span>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Bagkin Best Seller Grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Title Settings"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Heading",
+      "default": "Best Seller"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "min": 20,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Title Font Size",
+      "default": 32
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_line",
+      "label": "Show Underline Accent",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Underline Color",
+      "default": "#F0950A"
+    },
+    {
+      "type": "header",
+      "content": "Collection & Grid Layout Settings"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Select Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "label": "Products to Show",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "label": "Columns on Desktop",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "label": "Columns on Tablet",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "label": "Columns on Mobile",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Product Card Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show Sale Ribbon Badge",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "sale_badge_bg",
+      "label": "Sale Badge Background",
+      "default": "#e63946"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_secondary_image",
+      "label": "Show Secondary Image on Hover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Hover Action Icons (Cart, Quick View, Wishlist)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hover_actions",
+      "label": "Show Hover Actions Container",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart_action",
+      "label": "Show Add to Cart Icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quickview_action",
+      "label": "Show Search / Quick View Icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist_action",
+      "label": "Show Wishlist Icon",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors & Spacing"
+    },
+    {
+      "type": "color",
+      "id": "primary_accent",
+      "label": "Primary Accent Color (Hover)",
+      "default": "#F0950A"
+    },
+    {
+      "type": "color",
+      "id": "sale_price_color",
+      "label": "Sale Price Color",
+      "default": "#F0950A"
+    },
+    {
+      "type": "color",
+      "id": "section_bg_color",
+      "label": "Section Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top Padding",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom Padding",
+      "default": 50
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bagkin Best Seller Grid"
+    }
+  ]
+}
+{% endschema %}
