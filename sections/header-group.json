@@ -161,7 +161,7 @@
         "primary_color": "#f0950a",
         "secondary_color": "#000000",
         "header_bg_color": "#eae6df",
-        "sticky_header_bg": "{{ settings.color_palette.color1 }}",
+        "sticky_header_bg": "{{ settings.color_palette.foreground }}",
         "sticky_header_text_color": "#000000",
         "logo_image": "shopify://shop_images/liyana-1.svg",
         "logo_width": 160,
