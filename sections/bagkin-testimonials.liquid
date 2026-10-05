@@ -1,0 +1,452 @@
+{% comment %}
+  Bagkin Testimonials Section
+  - Background image with overlay
+  - Carousel for testimonials (blocks)
+  - Responsive design (Mobile & Desktop)
+{% endcomment %}
+
+<style>
+  :root {
+    --bagkin-font: 'Jost', sans-serif;
+  }
+
+  .bagkin-testimonials-wrapper {
+    position: relative;
+    width: 100%;
+    padding: 80px 5%;
+    background-color: #333;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    font-family: var(--bagkin-font);
+    overflow: hidden;
+    color: #fff;
+    text-align: center;
+  }
+
+  .bagkin-testimonials-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, {{ section.settings.overlay_opacity | divided_by: 100.0 }});
+    z-index: 1;
+  }
+
+  .bagkin-testimonials-content {
+    position: relative;
+    z-index: 2;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .bagkin-testi-heading {
+    font-size: 36px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    position: relative;
+    display: inline-block;
+  }
+
+  .bagkin-testi-heading::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    background-color: {{ section.settings.accent_color | default: '#F0950A' }};
+  }
+
+  /* --- Carousel --- */
+  .bagkin-testi-carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .bagkin-testi-track {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+  }
+
+  .bagkin-testi-slide {
+    flex: 0 0 100%;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  .bagkin-testi-slide.is-active {
+    opacity: 1;
+  }
+
+  .bagkin-testi-text {
+    font-size: 18px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    font-weight: 400;
+  }
+
+  .bagkin-testi-stars {
+    color: #F0950A; /* Yellow/Orange stars */
+    font-size: 18px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+  }
+
+  .bagkin-testi-author-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 auto 15px auto;
+    border: 3px solid rgba(255,255,255,0.2);
+  }
+
+  .bagkin-testi-author-name {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: {{ section.settings.accent_color | default: '#F0950A' }};
+    margin: 0 0 5px 0;
+  }
+
+  .bagkin-testi-author-title {
+    font-size: 13px;
+    color: #ccc;
+    font-weight: 300;
+  }
+
+  /* --- Navigation Arrows --- */
+  .bagkin-testi-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 3;
+    transition: background-color 0.3s ease;
+    border: none;
+    color: #fff;
+  }
+
+  .bagkin-testi-arrow:hover {
+    background-color: rgba(255,255,255,0.4);
+  }
+
+  .bagkin-testi-prev { left: -50px; }
+  .bagkin-testi-next { right: -50px; }
+
+  .bagkin-testi-arrow svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+
+  /* --- Dots --- */
+  .bagkin-testi-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 30px;
+  }
+
+  .bagkin-testi-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255,255,255,0.3);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .bagkin-testi-dot.is-active {
+    background-color: #fff;
+  }
+
+  /* --- Responsive --- */
+  @media screen and (max-width: 1024px) {
+    .bagkin-testi-prev { left: 0; }
+    .bagkin-testi-next { right: 0; }
+    .bagkin-testimonials-content { padding: 0 40px; }
+  }
+
+  @media screen and (max-width: 768px) {
+    .bagkin-testi-heading { font-size: 28px; }
+    .bagkin-testi-text { font-size: 16px; }
+    .bagkin-testimonials-content { padding: 0 20px; }
+    .bagkin-testi-arrow { display: none; } /* Hide arrows on mobile, rely on dots/swipe */
+  }
+</style>
+
+<section class="bagkin-testimonials-wrapper" style="{% if section.settings.bg_image != blank %}background-image: url('{{ section.settings.bg_image | image_url: width: 2000 }}');{% endif %}" id="bagkinTestimonials-{{ section.id }}">
+  <div class="bagkin-testimonials-overlay"></div>
+  
+  <div class="bagkin-testimonials-content">
+    {% if section.settings.heading != blank %}
+      <h2 class="bagkin-testi-heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="bagkin-testi-carousel">
+      <!-- Arrows -->
+      <button class="bagkin-testi-arrow bagkin-testi-prev" id="testiPrev-{{ section.id }}" aria-label="Previous">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+      <button class="bagkin-testi-arrow bagkin-testi-next" id="testiNext-{{ section.id }}" aria-label="Next">
+        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+
+      <!-- Track -->
+      <div class="bagkin-testi-track" id="testiTrack-{{ section.id }}">
+        {% for block in section.blocks %}
+          <div class="bagkin-testi-slide {% if forloop.first %}is-active{% endif %}" {{ block.shopify_attributes }}>
+            
+            {% if block.settings.text != blank %}
+              <div class="bagkin-testi-text">{{ block.settings.text }}</div>
+            {% endif %}
+
+            <div class="bagkin-testi-stars">
+              {% assign rating = block.settings.rating %}
+              {% for i in (1..5) %}
+                {% if i <= rating %}★{% else %}☆{% endif %}
+              {% endfor %}
+            </div>
+
+            {% if block.settings.author_image != blank %}
+              <img src="{{ block.settings.author_image | image_url: width: 160 }}" class="bagkin-testi-author-img" alt="{{ block.settings.author_name | escape }}" loading="lazy">
+            {% else %}
+              <div class="bagkin-testi-author-img" style="background-color: #555; display:flex; align-items:center; justify-content:center; color:#fff; font-size:24px;">
+                {{ block.settings.author_name | slice: 0 | upcase }}
+              </div>
+            {% endif %}
+
+            {% if block.settings.author_name != blank %}
+              <h4 class="bagkin-testi-author-name">{{ block.settings.author_name }}</h4>
+            {% endif %}
+
+            {% if block.settings.author_title != blank %}
+              <div class="bagkin-testi-author-title">{{ block.settings.author_title }}</div>
+            {% endif %}
+            
+          </div>
+        {% else %}
+          <!-- Dummy Slide if no blocks -->
+          <div class="bagkin-testi-slide is-active">
+            <div class="bagkin-testi-text">Saved our business! We have no regrets! Thanks for the great service.</div>
+            <div class="bagkin-testi-stars">★★★★★</div>
+            <div class="bagkin-testi-author-img" style="background-color: #555;"></div>
+            <h4 class="bagkin-testi-author-name">DESTINEE</h4>
+            <div class="bagkin-testi-author-title">Marketing Personal</div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Dots -->
+    <div class="bagkin-testi-dots" id="testiDots-{{ section.id }}">
+      {% for block in section.blocks %}
+        <div class="bagkin-testi-dot {% if forloop.first %}is-active{% endif %}" data-index="{{ forloop.index0 }}"></div>
+      {% endfor %}
+    </div>
+    
+  </div>
+</section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const track = document.getElementById('testiTrack-{{ section.id }}');
+    const slides = track.querySelectorAll('.bagkin-testi-slide');
+    const dots = document.querySelectorAll('#testiDots-{{ section.id }} .bagkin-testi-dot');
+    const prevBtn = document.getElementById('testiPrev-{{ section.id }}');
+    const nextBtn = document.getElementById('testiNext-{{ section.id }}');
+    
+    if(!track || slides.length === 0) return;
+
+    if(slides.length <= 1) {
+      if(prevBtn) prevBtn.style.display = 'none';
+      if(nextBtn) nextBtn.style.display = 'none';
+      return;
+    }
+
+    let currentIndex = 0;
+    let autoPlayInterval;
+    const intervalTime = 6000; // 6 seconds
+
+    function updateCarousel() {
+      // Move track
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      
+      // Update active classes
+      slides.forEach((slide, idx) => {
+        if(idx === currentIndex) slide.classList.add('is-active');
+        else slide.classList.remove('is-active');
+      });
+
+      dots.forEach((dot, idx) => {
+        if(idx === currentIndex) dot.classList.add('is-active');
+        else dot.classList.remove('is-active');
+      });
+    }
+
+    function nextSlide() {
+      currentIndex = (currentIndex + 1) % slides.length;
+      updateCarousel();
+    }
+
+    function prevSlide() {
+      currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+      updateCarousel();
+    }
+
+    function startAutoPlay() {
+      autoPlayInterval = setInterval(nextSlide, intervalTime);
+    }
+
+    function stopAutoPlay() {
+      clearInterval(autoPlayInterval);
+    }
+
+    // Event Listeners
+    if(nextBtn) {
+      nextBtn.addEventListener('click', () => { nextSlide(); stopAutoPlay(); startAutoPlay(); });
+    }
+    if(prevBtn) {
+      prevBtn.addEventListener('click', () => { prevSlide(); stopAutoPlay(); startAutoPlay(); });
+    }
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        currentIndex = parseInt(e.target.getAttribute('data-index'));
+        updateCarousel();
+        stopAutoPlay();
+        startAutoPlay();
+      });
+    });
+
+    // Touch Swipe Support for Mobile
+    let touchStartX = 0;
+    let touchEndX = 0;
+
+    track.addEventListener('touchstart', e => {
+      touchStartX = e.changedTouches[0].screenX;
+      stopAutoPlay();
+    }, {passive: true});
+
+    track.addEventListener('touchend', e => {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+      startAutoPlay();
+    }, {passive: true});
+
+    function handleSwipe() {
+      if (touchEndX < touchStartX - 50) nextSlide();
+      if (touchEndX > touchStartX + 50) prevSlide();
+    }
+
+    startAutoPlay();
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Bagkin Testimonials",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "TESTIMONIALS"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Overlay Opacity",
+      "default": 60
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color (Underline & Name)",
+      "default": "#F0950A"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Review Text",
+          "default": "Saved our business! We have no regrets! Thanks for the great service."
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Star Rating",
+          "default": 5
+        },
+        {
+          "type": "image_picker",
+          "id": "author_image",
+          "label": "Author Image"
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Author Name",
+          "default": "DESTINEE"
+        },
+        {
+          "type": "text",
+          "id": "author_title",
+          "label": "Author Title",
+          "default": "Marketing Personal"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bagkin Testimonials",
+      "blocks": [
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        },
+        {
+          "type": "testimonial"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
