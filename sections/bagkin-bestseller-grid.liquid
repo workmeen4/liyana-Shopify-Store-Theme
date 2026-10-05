@@ -617,12 +617,14 @@
         {% for product in selected_collection.products limit: limit %}
           <div
             class="bagkin-product-card"
+            data-product-handle="{{ product.handle }}"
             data-product-title="{{ product.title | escape }}"
             data-product-price="{{ product.price | money }}"
             data-product-compare="{{ product.compare_at_price | money }}"
             data-product-img="{{ product.featured_image | image_url: width: 800 }}"
             data-product-desc="{{ product.description | strip_html | truncate: 150 | escape }}"
             data-variant-id="{{ product.selected_or_first_available_variant.id }}"
+            data-product-images="{% assign img_urls = '' %}{% for img in product.images limit: 8 %}{% unless forloop.first %}|{% endunless %}{{ img | image_url: width: 800 }}{% endfor %}"
           >
             <div class="bagkin-product-media">
               {% comment %} Sale Badge Ribbon {% endcomment %}
@@ -683,12 +685,36 @@
               {% endif %}
             </div>
 
-            {% comment %} Color Swatches on Card {% endcomment %}
+            {% comment %} Real Color Swatches from product variants {% endcomment %}
             {% if section.settings.show_swatches %}
               <div class="bagkin-color-swatches">
-                <span class="bagkin-swatch is-active" style="background-color: #d27d2d;" title="Bronze"></span>
-                <span class="bagkin-swatch" style="background-color: #e6b800;" title="Mustard"></span>
-                <span class="bagkin-swatch" style="background-color: #000000;" title="Black"></span>
+                {% assign option_index = nil %}
+                {% for option in product.options_with_values %}
+                  {% assign option_down = option.name | downcase %}
+                  {% if option_down == 'color' or option_down == 'colour' %}
+                    {% assign option_index = forloop.index0 %}
+                  {% endif %}
+                {% endfor %}
+                {% if option_index != nil %}
+                  {% assign color_option = product.options_with_values[option_index] %}
+                  {% for value in color_option.values limit: 5 %}
+                    <span
+                      class="bagkin-swatch {% if forloop.first %}is-active{% endif %}"
+                      style="background-color: {{ value | downcase | replace: ' ', '' }};"
+                      title="{{ value }}"
+                      data-color="{{ value }}"
+                    ></span>
+                  {% endfor %}
+                {% else %}
+                  {% for variant in product.variants limit: 4 %}
+                    <span
+                      class="bagkin-swatch {% if forloop.first %}is-active{% endif %}"
+                      style="background-color: {{ variant.title | downcase | replace: ' ', '' }};"
+                      title="{{ variant.title }}"
+                      data-color="{{ variant.title }}"
+                    ></span>
+                  {% endfor %}
+                {% endif %}
               </div>
             {% endif %}
 
@@ -785,8 +811,11 @@
 <div class="bagkin-quickview-modal" id="bagkinQuickViewModal">
   <button class="bagkin-modal-close" id="bagkinModalClose">&times;</button>
   <div class="bagkin-modal-body">
-    <div class="bagkin-modal-media">
+    <div class="bagkin-modal-media" style="position:relative;">
+      <!-- Gallery arrows -->
+      <button id="bagkinModalImgPrev" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);z-index:5;background:rgba(0,0,0,0.4);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;display:none;align-items:center;justify-content:center;">&lsaquo;</button>
       <img src="" alt="Product Image" id="bagkinModalImg" class="bagkin-modal-img">
+      <button id="bagkinModalImgNext" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:5;background:rgba(0,0,0,0.4);color:#fff;border:none;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;display:none;align-items:center;justify-content:center;">&rsaquo;</button>
     </div>
     <div class="bagkin-modal-details">
       <h2 class="bagkin-modal-title" id="bagkinModalTitle">Bella Bag</h2>
@@ -844,28 +873,110 @@
     const modalCompare = document.getElementById('bagkinModalCompare');
     const modalImg = document.getElementById('bagkinModalImg');
     const modalDesc = document.getElementById('bagkinModalDesc');
+    const imgPrev = document.getElementById('bagkinModalImgPrev');
+    const imgNext = document.getElementById('bagkinModalImgNext');
 
-    // Open Quick View Modal
+    let galleryImages = [];
+    let galleryIndex = 0;
+    let currentVariantId = null;
+
+    // --- CSS color name fallback map ---
+    const colorMap = {
+      'bronze':'#cd7f32','burgundy':'#800020','black':'#000000','white':'#ffffff',
+      'red':'#cc0000','blue':'#1a56db','navy':'#001f5b','green':'#1a7a1a',
+      'yellow':'#e6b800','mustard':'#e6b800','gold':'#cfa524','pink':'#e75480',
+      'purple':'#6a0dad','orange':'#e8600a','grey':'#888888','gray':'#888888',
+      'brown':'#7b4f28','beige':'#d4b896','cream':'#f5f0e8','tan':'#d2b48c',
+      'silver':'#aaaaaa','camel':'#c19a6b','nude':'#e3bc9a','rust':'#b7410e',
+      'teal':'#008080','olive':'#808000','lilac':'#c8a2c8','rose':'#ff007f',
+    };
+
+    // Fix card swatch colors using map
+    document.querySelectorAll('.bagkin-swatch').forEach(sw => {
+      const raw = (sw.getAttribute('title') || '').toLowerCase().trim().replace(/\s+/g, '');
+      const mapped = colorMap[raw];
+      if (mapped) sw.style.backgroundColor = mapped;
+    });
+
+    // Gallery navigation
+    function setGalleryImage(idx) {
+      if (!galleryImages.length) return;
+      if (idx < 0) idx = galleryImages.length - 1;
+      if (idx >= galleryImages.length) idx = 0;
+      galleryIndex = idx;
+      modalImg.src = galleryImages[galleryIndex];
+      const showArrows = galleryImages.length > 1;
+      if (imgPrev) imgPrev.style.display = showArrows ? 'flex' : 'none';
+      if (imgNext) imgNext.style.display = showArrows ? 'flex' : 'none';
+    }
+
+    if (imgPrev) imgPrev.addEventListener('click', () => setGalleryImage(galleryIndex - 1));
+    if (imgNext) imgNext.addEventListener('click', () => setGalleryImage(galleryIndex + 1));
+
+    // Open Quick View Modal — fetch full product data via Shopify AJAX API
     document.querySelectorAll('.bagkin-trigger-quickview').forEach(button => {
       button.addEventListener('click', function (e) {
         e.preventDefault();
         const card = this.closest('.bagkin-product-card');
 
-        const title = card.getAttribute('data-product-title') || 'Bella Bag';
-        const price = card.getAttribute('data-product-price') || '$60.00';
-        const compare = card.getAttribute('data-product-compare') || '$70.00';
-        const desc = card.getAttribute('data-product-desc') || 'Cheer on your favorite bag in style!';
-        const img = card.getAttribute('data-product-img') || card.querySelector('.bagkin-product-img').src;
+        const title = card.getAttribute('data-product-title') || '';
+        const price = card.getAttribute('data-product-price') || '';
+        const compare = card.getAttribute('data-product-compare') || '';
+        const desc = card.getAttribute('data-product-desc') || '';
+        const fallbackImg = card.getAttribute('data-product-img') || '';
+        const handle = card.getAttribute('data-product-handle') || '';
+        currentVariantId = card.getAttribute('data-variant-id');
 
         modalTitle.textContent = title;
         modalPrice.textContent = price;
         modalCompare.textContent = compare;
-        modalDesc.textContent = desc;
-        modalImg.src = img;
+        if (modalCompare) modalCompare.style.display = compare && compare !== price ? 'inline' : 'none';
+        if (modalDesc) modalDesc.textContent = desc;
+        document.getElementById('bagkinQtyInput').value = 1;
+
+        // Set initial image immediately, then fetch gallery
+        galleryImages = [fallbackImg];
+        setGalleryImage(0);
 
         overlay.classList.add('is-open');
         modal.classList.add('is-open');
         document.body.style.overflow = 'hidden';
+
+        // Fetch full product images from Shopify
+        if (handle) {
+          fetch('/products/' + handle + '.js')
+            .then(r => r.json())
+            .then(p => {
+              if (p.images && p.images.length > 0) {
+                galleryImages = p.images.map(img => img.replace(/\.jpg|\.(png|gif|webp)/i, m => '_800x' + m));
+                setGalleryImage(0);
+              }
+              // Update swatches in modal dynamically
+              const swatchContainer = document.querySelector('.bagkin-modal-swatches');
+              const colorLabel = document.getElementById('bagkinModalColorName');
+              if (swatchContainer && p.options) {
+                const colorOpt = p.options.find(o => o.name.toLowerCase() === 'color' || o.name.toLowerCase() === 'colour');
+                if (colorOpt && colorOpt.values) {
+                  swatchContainer.innerHTML = '';
+                  colorOpt.values.slice(0, 6).forEach((val, i) => {
+                    const sp = document.createElement('span');
+                    sp.className = 'bagkin-modal-swatch' + (i === 0 ? ' is-selected' : '');
+                    const key = val.toLowerCase().replace(/\s+/g, '');
+                    sp.style.backgroundColor = colorMap[key] || val.toLowerCase();
+                    sp.setAttribute('data-color', val);
+                    sp.addEventListener('click', function() {
+                      swatchContainer.querySelectorAll('.bagkin-modal-swatch').forEach(s => s.classList.remove('is-selected'));
+                      this.classList.add('is-selected');
+                      if (colorLabel) colorLabel.textContent = this.getAttribute('data-color');
+                    });
+                    swatchContainer.appendChild(sp);
+                  });
+                  if (colorLabel) colorLabel.textContent = colorOpt.values[0];
+                }
+              }
+            })
+            .catch(() => {});
+        }
       });
     });
 
@@ -878,7 +989,7 @@
     if (closeBtn) closeBtn.addEventListener('click', closeModal);
     if (overlay) overlay.addEventListener('click', closeModal);
 
-    // Color Swatches interaction in Modal
+    // Color Swatches interaction in Modal (static fallback)
     const colorLabel = document.getElementById('bagkinModalColorName');
     document.querySelectorAll('.bagkin-modal-swatch').forEach(swatch => {
       swatch.addEventListener('click', function () {
@@ -903,6 +1014,59 @@
         qtyInput.value = val + 1;
       });
     }
+
+    // --- ADD TO CART via AJAX ---
+    const addToCartBtn = document.getElementById('bagkinModalAddToCart');
+    if (addToCartBtn) {
+      addToCartBtn.addEventListener('click', function () {
+        if (!currentVariantId) return;
+        const qty = parseInt(document.getElementById('bagkinQtyInput').value) || 1;
+        addToCartBtn.textContent = 'ADDING...';
+        addToCartBtn.disabled = true;
+
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ id: parseInt(currentVariantId), quantity: qty })
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.status) {
+            addToCartBtn.textContent = 'ERROR!';
+          } else {
+            addToCartBtn.textContent = 'ADDED!';
+            // Update cart badge count
+            fetch('/cart.js')
+              .then(r => r.json())
+              .then(cart => {
+                document.querySelectorAll('.bagkin-cart-badge').forEach(b => { b.textContent = cart.item_count; });
+              });
+          }
+          setTimeout(() => { addToCartBtn.textContent = 'ADD TO CART'; addToCartBtn.disabled = false; }, 1800);
+        })
+        .catch(() => { addToCartBtn.textContent = 'ADD TO CART'; addToCartBtn.disabled = false; });
+      });
+    }
+
+    // --- Hover card Add to Cart forms (AJAX) ---
+    document.querySelectorAll('.bagkin-add-to-cart-form').forEach(form => {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const id = form.querySelector('input[name="id"]').value;
+        const btn = form.querySelector('button[type="submit"]');
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ id: parseInt(id), quantity: 1 })
+        }).then(r => r.json()).then(data => {
+          if (!data.status) {
+            fetch('/cart.js').then(r => r.json()).then(cart => {
+              document.querySelectorAll('.bagkin-cart-badge').forEach(b => { b.textContent = cart.item_count; });
+            });
+          }
+        }).catch(() => {});
+      });
+    });
   });
 </script>
 
