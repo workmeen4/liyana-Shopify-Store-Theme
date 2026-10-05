@@ -341,9 +341,22 @@
     if (!header) return;
 
     function getScroll() {
-      return window.scrollY !== undefined ? window.scrollY
+      // 1. Try standard window scroll
+      var scrollY = window.scrollY !== undefined ? window.scrollY
            : window.pageYOffset !== undefined ? window.pageYOffset
            : document.documentElement.scrollTop || document.body.scrollTop || 0;
+           
+      // 2. If 0, check spacer position (foolproof for wrapper-scroll themes)
+      if (scrollY === 0) {
+        var spacer = document.querySelector('.bagkin-header-spacer');
+        if (spacer) {
+          var rectTop = spacer.getBoundingClientRect().top;
+          if (rectTop < 0) {
+            scrollY = Math.abs(rectTop);
+          }
+        }
+      }
+      return scrollY;
     }
 
     function updateSpacerHeight() {
