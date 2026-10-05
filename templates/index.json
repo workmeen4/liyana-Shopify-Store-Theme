@@ -328,7 +328,7 @@
         "title_color": "#000000",
         "show_line": true,
         "line_color": "#f0950a",
-        "collection": "",
+        "collection": "frontpage",
         "products_to_show": 4,
         "columns_desktop": 4,
         "columns_tablet": 3,
@@ -398,7 +398,7 @@
         "heading": "Latest News",
         "blog": "",
         "post_limit": 6,
-        "accent_color": "#F0950A"
+        "accent_color": "#f0950a"
       }
     }
   },
