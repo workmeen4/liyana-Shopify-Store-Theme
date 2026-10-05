@@ -390,6 +390,7 @@
       "name": "Bagkin Testimonials",
       "settings": {
         "heading": "TESTIMONIALS",
+        "bg_image": "shopify://shop_images/ChatGPT_Image_Aug_21_2026_04_18_46_PM.png",
         "overlay_opacity": 60,
         "accent_color": "#f0950a"
       }
